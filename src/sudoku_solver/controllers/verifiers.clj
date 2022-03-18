@@ -7,5 +7,5 @@
   [map :- wire.in.verifier/Matrix]
   (cond
     (logic.verifier/invalid-values? map) :invalid-values
-    (logic.verifier/collition? map) :invalid-position
+    (logic.verifier/collision? map) :invalid-position
     :default :ooops))
