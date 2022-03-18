@@ -1,0 +1,1 @@
+["^ ","~$sudoku-matrix",["^ ","~:row",4,"~:col",1,"~:name","^0","~:ns","~$sudoku-solver.core","~:top-ns","^5"],"~$-main",["^ ","^1",21,"^2",1,"~:varargs-min-arity",0,"^3","^7","^4","^5","^6","^5"],"~:filename","/Users/caio.cascaes/Documents/Personal/sudoku-solver/src/sudoku_solver/core.clj"]
