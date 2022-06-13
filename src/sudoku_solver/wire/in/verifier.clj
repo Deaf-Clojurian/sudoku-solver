@@ -8,7 +8,7 @@
 (s/defschema XYPos (apply s/enum xy-pos-enum))
 
 (def skeleton
-  {:quadrant     XYPos
-   :values {XYPos (s/maybe s/Int)}})
+  {:quadrant XYPos
+   :values   {XYPos (s/maybe s/Int)}})
 
 (s/defschema Matrix skeleton)

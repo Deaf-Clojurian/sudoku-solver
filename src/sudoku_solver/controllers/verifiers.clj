@@ -9,4 +9,4 @@
     (logic.verifier/invalid-values? map) :invalid-values
     (logic.verifier/collision? map) :invalid-position
     (logic.verifier/correct-solution? map) :correct
-    :else :ooops))
+    :else :incorrect))

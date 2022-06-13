@@ -1,4 +1,5 @@
-(ns sudoku-solver.common)
+(ns sudoku-solver.common
+  (:require [sudoku-solver.adapters.quadrant :as adapters.quadrant]))
 
 (def pos-filler
   (for [i (range 0 3)
@@ -6,23 +7,17 @@
     (str i j)))
 
 (def vertical-positions
-  (mapv vec (partition 3 (for [i (range 0 3)
-                               j (range 0 3)]
-                           (keyword (str j i))))))
+  (partition 3 (map #(apply (comp keyword str) (reverse %)) pos-filler)))
 
 (def horizontal-positions
-  (mapv vec (partition 3 (for [i (range 0 3)
-                               j (range 0 3)]
-                           (keyword (str i j))))))
+  (partition 3 (map keyword pos-filler)))
 
 (defn matrix-direction-lines
   [positions]
-  (partition 9
-             (flatten (for [quadrant positions]
-                        (map #(vec
-                                (for [matrix quadrant
+  (partition 9 (flatten (for [quadrant positions]
+                          (map #(for [matrix quadrant
                                       value %]
-                                  {:matrix matrix :value value})) positions)))))
+                                  (adapters.quadrant/->position matrix value)) positions)))))
 
 (def matrix-vertical-lines
   (matrix-direction-lines vertical-positions))
@@ -31,7 +26,7 @@
   (matrix-direction-lines horizontal-positions))
 
 (def all-quadrants
-  (mapv #(mapv (fn [v] {:matrix (keyword %) :value (keyword v)}) pos-filler) pos-filler))
+  (map #(map (fn [v] (adapters.quadrant/->position (keyword %) (keyword v))) pos-filler) pos-filler))
 
 (def all-traverses
   (concat all-quadrants matrix-horizontal-lines matrix-vertical-lines))

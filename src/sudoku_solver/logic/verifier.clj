@@ -27,12 +27,13 @@
 
 (s/defn correct-solution? :- s/Bool
   [m :- wire.in.verifier/Matrix]
-  (mapv #(= 9 (-> (for [matrix m
-                        quadrant %
-                        :when (= (:quadrant matrix) (:matrix quadrant))]
-                    (get (:values matrix) (:value quadrant)))
-                  set
-                  count)) common/all-traverses))
+  (reduce #(and %1 %2)
+          (mapv #(= 9 (-> (for [matrix m
+                                quadrant %
+                                :when (= (:quadrant matrix) (:matrix quadrant))]
+                            (get (:values matrix) (:value quadrant)))
+                          set
+                          count)) common/all-traverses)))
 
 #_{:quadrant :21
    :values   {:00 nil :01 nil :02 1
