@@ -32,7 +32,7 @@
                         :when (= (:quadrant matrix) (:matrix quadrant))]
                     (get (:values matrix) (:value quadrant)))
                   set
-                  count)) common/all-quadrants))
+                  count)) common/all-traverses))
 
 #_{:quadrant :21
    :values   {:00 nil :01 nil :02 1
