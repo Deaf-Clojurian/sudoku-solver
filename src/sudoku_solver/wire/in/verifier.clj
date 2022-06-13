@@ -9,6 +9,6 @@
 
 (def skeleton
   {:quadrant     XYPos
-   :fixed-values {XYPos (s/maybe s/Int)}})
+   :values {XYPos (s/maybe s/Int)}})
 
 (s/defschema Matrix skeleton)

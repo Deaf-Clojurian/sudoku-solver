@@ -8,4 +8,5 @@
   (cond
     (logic.verifier/invalid-values? map) :invalid-values
     (logic.verifier/collision? map) :invalid-position
-    :default :ooops))
+    (logic.verifier/correct-solution? map) :correct
+    :else :ooops))
