@@ -34,8 +34,3 @@
                             (get (:values matrix) (:value quadrant)))
                           set
                           count)) common/all-traverses)))
-
-#_{:quadrant :21
-   :values   {:00 nil :01 nil :02 1
-              :10 nil :11 4 :12 nil
-              :20 nil :21 nil :22 nil}}

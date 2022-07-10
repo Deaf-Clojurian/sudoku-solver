@@ -1,5 +1,6 @@
 (ns sudoku-solver.core
-  (:require [sudoku-solver.controllers.verifiers :as controllers.verifiers])
+  (:require [sudoku-solver.controllers.verifiers :as controllers.verifiers]
+            [sudoku-solver.controllers.solver :as controllers.solver])
   (:gen-class))
 
 (def sudoku-matrix [{:quadrant :00
@@ -78,10 +79,21 @@
                :20 4 :21 5 :22 6}}])
 
 
+(def sudoku-matrix-input
+  [[nil 4 nil nil nil 3 nil 8 nil]
+   [1 7 nil nil nil nil nil nil 6]
+   [nil nil 9 2 nil nil nil nil nil]
+   [5 nil 2 nil 9 nil nil nil nil]
+   [nil nil nil 8 7 nil nil nil nil]
+   [nil nil nil nil nil nil nil nil nil]
+   [nil nil nil nil 6 nil 3 7 nil]
+   [nil 8 nil nil 3 nil nil 2 nil]
+   [nil nil 5 nil nil 8 9 nil nil]])
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (case (keyword (first args))
-    :solver (prn (str "Aaaalliii: " (first args)))
+    :solver (prn (controllers.solver/fill sudoku-matrix-input))
     :verifier (prn (controllers.verifiers/check sudoku-matrix-completed))
     (prn "Unknown option")))
