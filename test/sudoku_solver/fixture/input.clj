@@ -190,3 +190,14 @@
     :values   {:00 7 :01 8 :02 9
                :10 1 :11 2 :12 3
                :20 4 :21 5 :22 6}}])
+
+(def incoming-input
+  [[nil 4 nil nil nil 3 nil 8 nil]
+   [1 7 nil nil nil nil nil nil 6]
+   [nil nil 9 2 nil nil nil nil nil]
+   [5 nil 2 nil 9 nil nil nil nil]
+   [nil nil nil 8 7 nil nil nil nil]
+   [nil nil nil nil nil nil nil nil nil]
+   [nil nil nil nil 6 nil 3 7 nil]
+   [nil 8 nil nil 3 nil nil 2 nil]
+   [nil nil 5 nil nil 8 9 nil nil]])

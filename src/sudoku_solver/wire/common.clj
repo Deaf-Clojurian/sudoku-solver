@@ -11,5 +11,10 @@
   {:quadrant XYPos
    :values   {XYPos (s/maybe s/Int)}})
 
+(def skeleton-solving
+  {:quadrant XYPos
+   :values   (s/conditional map? {XYPos s/Int}
+                            :else #{s/Int})})
+
 (def skeleton-io
-  [[s/Int]])
+  [[(s/maybe s/Int)]])
