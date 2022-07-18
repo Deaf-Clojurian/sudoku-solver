@@ -7,7 +7,8 @@
 
 (s/defn fill :- wire.out.solver/MatrixResult
   [input :- wire.in.solver/MatrixInput]
-  (let [sudoku-matrix (adapters.solver/->matrix input)
-        sudoku-fill (logic.solver/fill-nil sudoku-matrix)
+  (let [sudoku-fill (-> (adapters.solver/->matrix input)
+                        logic.solver/fill-nil
+                        logic.solver/uniqued)
         sudoku-grid (atom sudoku-fill)]
     (clojure.pprint/pprint @sudoku-grid)))

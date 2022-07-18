@@ -2,8 +2,7 @@
   (:require [schema.core :as s]
             [sudoku-solver.wire.in.solver :as wire.in.solver]
             [sudoku-solver.common :as common]
-            [clojure.set :as set]
-            [sudoku-solver.wire.common :as wire.common]))
+            [clojure.set :as set]))
 
 (s/defn crude-invert-fill :- #{s/Int}
   [values :- #{s/Int}]
@@ -20,11 +19,10 @@
 (s/defn lines-vals :- (s/maybe s/Int)
   [sudoku-matrix :- (s/pred map?)
    {matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
-  (let [v (some-> (filter (fn [{:keys [quadrant]}] (= quadrant matrix-quadrant)) sudoku-matrix)
-                  first
-                  :values
-                  (get value-pos))]
-    (when (int? v) v)))
+  (some-> (filter (fn [{:keys [quadrant]}] (= quadrant matrix-quadrant)) sudoku-matrix)
+          first
+          :values
+          (get value-pos)))
 
 (s/defn common-values-all-lines :- #{s/Int}
   [quadrant :- s/Keyword
@@ -44,6 +42,28 @@
   [sudoku-matrix :- wire.in.solver/Matrix]
   (map (fn [{:keys [quadrant values]}]
          {:quadrant quadrant :values (into {} (map #(inject-sets quadrant % sudoku-matrix) (partition 2 (reduce into [] values))))}) sudoku-matrix))
+
+(s/defn replace-unique
+  [quadrant :- s/Keyword
+   quadrant-pos :- s/Keyword
+   value :- s/Any
+   sudoku-matrix :- wire.in.solver/MatrixSolving
+   {matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
+  (if (set? value)
+    (if (and (= quadrant-pos value-pos) (= quadrant matrix-quadrant))
+    (reduce #(and %1 %2) ())))))
+
+(s/defn override-unique :- wire.in.solver/MatrixSolving
+  [quadrant :- s/Keyword
+   [quadrant-pos value] :- '(s/Keyword s/Any)
+   sudoku-matrix :- (s/pred map?)]
+  (map #(-> (map (partial replace-unique quadrant quadrant-pos value sudoku-matrix) %)) (cross-lines-from-pos quadrant quadrant-pos)))
+
+(s/defn uniqued :- wire.in.solver/MatrixSolving
+  [sudoku-matrix :- wire.in.solver/MatrixSolving]
+  (map (fn [{:keys [quadrant values]}]
+         {:quadrant quadrant :values (into {} (map #(override-unique quadrant % sudoku-matrix) (partition 2 (reduce into [] values))))}) sudoku-matrix)
+  )
 
 ;[{:quadrant :00
 ;  :values   {:00 2 :01 1 :02 9

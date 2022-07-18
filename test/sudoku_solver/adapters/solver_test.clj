@@ -30,3 +30,4 @@
                  {:quadrant :12 :values {:00 nil :01 nil :02 nil :10 nil :11 nil :12 nil :20 nil :21 nil :22 nil}}
                  {:quadrant :22 :values {:00 3 :01 7 :02 nil :10 nil :11 2 :12 nil :20 9 :21 nil :22 nil}}]
                 (adapters.solver/->matrix fixture.input/incoming-input)))))
+
