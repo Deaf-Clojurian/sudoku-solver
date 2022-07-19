@@ -4,6 +4,15 @@
             [sudoku-solver.common :as common]
             [clojure.set :as set]))
 
+(s/def sudoku-ref (atom {}))
+
+(s/defn retrieve-val
+  [quadrant :- s/Keyword
+   value-of :- s/Keyword]
+  (some-> (filter #(= quadrant (:quadrant %)) @sudoku-ref)
+          first
+          (get-in [:values value-of])))
+
 (s/defn crude-invert-fill :- #{s/Int}
   [values :- #{s/Int}]
   (let [values-without-nil (filter #(not (nil? %)) values)]
@@ -17,53 +26,66 @@
   (filter #(first (filter (fn [{:keys [matrix value]}] (and (= value quadrant-pos) (= matrix quadrant))) %)) common/all-traverses))
 
 (s/defn lines-vals :- (s/maybe s/Int)
-  [sudoku-matrix :- (s/pred map?)
-   {matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
-  (some-> (filter (fn [{:keys [quadrant]}] (= quadrant matrix-quadrant)) sudoku-matrix)
-          first
-          :values
-          (get value-pos)))
+  [{matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
+  (retrieve-val matrix-quadrant value-pos))
 
 (s/defn common-values-all-lines :- #{s/Int}
   [quadrant :- s/Keyword
-   quadrant-pos :- s/Keyword
-   sudoku-matrix :- (s/pred map?)]
-  (reduce set/union (map #(-> (map (partial lines-vals sudoku-matrix) %) set (disj nil)) (cross-lines-from-pos quadrant quadrant-pos))))
+   quadrant-pos :- s/Keyword]
+  (reduce set/union (map #(-> (map lines-vals %) set (disj nil)) (cross-lines-from-pos quadrant quadrant-pos))))
 
 (s/defn inject-sets
   [quadrant :- s/Keyword
-   [quadrant-pos value] :- '(s/Keyword s/Any)
-   sudoku-matrix :- (s/pred map?)]
+   [quadrant-pos value] :- '(s/Keyword s/Any)]
   (if (nil? value)
-    {quadrant-pos (crude-invert-fill (common-values-all-lines quadrant quadrant-pos sudoku-matrix))}
+    {quadrant-pos (crude-invert-fill (common-values-all-lines quadrant quadrant-pos))}
     {quadrant-pos value}))
 
 (s/defn fill-nil :- wire.in.solver/MatrixSolving
   [sudoku-matrix :- wire.in.solver/Matrix]
   (map (fn [{:keys [quadrant values]}]
-         {:quadrant quadrant :values (into {} (map #(inject-sets quadrant % sudoku-matrix) (partition 2 (reduce into [] values))))}) sudoku-matrix))
+         {:quadrant quadrant :values (into {} (map #(inject-sets quadrant %) (partition 2 (reduce into [] values))))}) sudoku-matrix))
 
 (s/defn replace-unique
   [quadrant :- s/Keyword
    quadrant-pos :- s/Keyword
    value :- s/Any
-   sudoku-matrix :- wire.in.solver/MatrixSolving
    {matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
-  (if (set? value)
-    (if (and (= quadrant-pos value-pos) (= quadrant matrix-quadrant))
-    (reduce #(and %1 %2) ())))))
+  (or (and (= quadrant-pos value-pos)
+           (= quadrant matrix-quadrant))
+      (let [retrieved-val (retrieve-val matrix-quadrant value-pos)]
+        (if (set? retrieved-val)
+          (not (contains? retrieved-val value))
+          (not= retrieved-val value)))))
 
-(s/defn override-unique :- wire.in.solver/MatrixSolving
+(s/defn remove-val-from-cell-sets
+  [at-least-number :- s/Int
+   quadrant :- s/Keyword
+   quadrant-pos :- s/Keyword]
+  (doseq [{:keys [matrix value]} (cross-lines-from-pos quadrant quadrant-pos)]
+    (let [retrieved-val (retrieve-val matrix value)]
+      (if (set? retrieved-val)
+        (swap! sudoku-ref #(update-in % [quadrant quadrant-pos]))))))
+
+(s/defn override-unique
   [quadrant :- s/Keyword
-   [quadrant-pos value] :- '(s/Keyword s/Any)
-   sudoku-matrix :- (s/pred map?)]
-  (map #(-> (map (partial replace-unique quadrant quadrant-pos value sudoku-matrix) %)) (cross-lines-from-pos quadrant quadrant-pos)))
+   [quadrant-pos value] :- '(s/Keyword s/Any)]
+  (if (set? value)
+    (let [at-least-number (first (filter (fn [value-pos]
+                                           (reduce #(and %1 %2) (map (partial replace-unique quadrant quadrant-pos value-pos) (cross-lines-from-pos quadrant quadrant-pos)))) value))]
+      (if (int? at-least-number)
+        (do
+          (remove-val-from-cell-sets at-least-number quadrant quadrant-pos)
+          {quadrant-pos at-least-number})
+        {quadrant-pos value}))
+
+    {quadrant-pos value}))
 
 (s/defn uniqued :- wire.in.solver/MatrixSolving
   [sudoku-matrix :- wire.in.solver/MatrixSolving]
+  (reset! sudoku-ref sudoku-matrix)
   (map (fn [{:keys [quadrant values]}]
-         {:quadrant quadrant :values (into {} (map #(override-unique quadrant % sudoku-matrix) (partition 2 (reduce into [] values))))}) sudoku-matrix)
-  )
+         {:quadrant quadrant :values (into {} (map #(override-unique quadrant %) (partition 2 (reduce into [] values))))}) @sudoku-ref))
 
 ;[{:quadrant :00
 ;  :values   {:00 2 :01 1 :02 9

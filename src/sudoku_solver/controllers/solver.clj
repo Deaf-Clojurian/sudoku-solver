@@ -5,10 +5,16 @@
             [sudoku-solver.logic.solver :as logic.solver]
             [sudoku-solver.wire.in.solver :as wire.in.solver]))
 
+(def louco (atom 9))
+
 (s/defn fill :- wire.out.solver/MatrixResult
   [input :- wire.in.solver/MatrixInput]
-  (let [sudoku-fill (-> (adapters.solver/->matrix input)
+  (let [_ (println "Louco: " @louco)
+        sudoku-fill (-> (adapters.solver/->matrix input)
                         logic.solver/fill-nil
                         logic.solver/uniqued)
+
         sudoku-grid (atom sudoku-fill)]
     (clojure.pprint/pprint @sudoku-grid)))
+
+
