@@ -12,3 +12,4 @@ pom.xml.asc
 .hg/
  .clj-kondo
 .idea
+*.iml

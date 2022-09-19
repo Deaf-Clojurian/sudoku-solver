@@ -1,5 +1,5 @@
-(ns sudoku-solver.wire.in.verifier
+(ns sudoku-solver.wire.out.solver
   (:require [schema.core :as s]
             [sudoku-solver.wire.common :as wire.common]))
 
-(s/defschema Matrix wire.common/skeleton-internal)
+(s/defschema MatrixResult wire.common/skeleton-io)
