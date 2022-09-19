@@ -111,15 +111,26 @@
    [nil nil nil 6 5 9 nil nil nil]
    [nil nil nil nil 8 nil nil 5 nil]])
 
+(def plain-json-correct
+  [[2 1 9 5 4 3 6 7 8]
+   [5 4 3 8 7 6 9 1 2]
+   [8 7 6 2 1 9 3 4 5]
+   [4 3 2 7 6 5 8 9 1]
+   [7 6 5 1 9 8 2 3 4]
+   [1 9 8 4 3 2 5 6 7]
+   [3 2 1 6 5 4 7 8 9]
+   [6 5 4 9 8 7 1 2 3]
+   [9 8 7 3 2 1 4 5 6]])
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (case (keyword (first args))
     :solver (prn (controllers.solver/fill sudoku-matrix-input-2))
-    :verifier (prn (controllers.verifiers/check sudoku-matrix-completed))
+    :verifier (prn (controllers.verifiers/check plain-json-correct))
     (prn "Unknown option")))
 
-(defn mostra
+(defn verify
   [{:keys [body]}]
   (let [r (-> body
               slurp
@@ -128,25 +139,15 @@
 
     (response (json/write-str {:verified-as r}))))
 (defroutes app-routes
-           (GET "/" [] "Hello Woreeld")
-           (POST "/verify" [] (-> mostra
-                                  wrap-json-response))      ;(controllers.verifiers/check sudoku-matrix-completed)
+           (GET "/" [] "{\"sudoku-solver\": {\"routes\" : [\"verify\"]}}")
+           (POST "/verify" [] (-> verify
+                                  wrap-json-response))
 
-           (route/not-found "Not Found"))
+           (route/not-found "{\"error\" : \"Not Found\"}"))
 
 (def app
-
   (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false)))
 
-(def plain-json-correct
-  [[2 1 9 5 4 3 8 7 6]
-   [5 4 3 8 7 6 2 1 9]
-   [6 7 8 9 1 2 3 4 5]
-   [4 3 2 7 6 5 1 9 8]
-   [7 6 5 1 9 8 4 3 2]
-   [8 9 1 2 3 4 5 6 7]
-   [3 2 1 6 5 4 9 8 7]
-   [6 5 4 9 8 7 3 2 1]
-   [7 8 9 1 2 3 4 5 6]])
+
 
 
