@@ -10,7 +10,8 @@
 (s/defn fill :- wire.out.solver/MatrixResult
   [input :- wire.in.solver/MatrixInput]
   (let [_ (println "Louco: " @louco)
-        sudoku-fill (-> (adapters.solver/->matrix input)
+        sudoku-fill (-> input
+                        adapters.solver/->matrix
                         logic.solver/fill-nil
                         logic.solver/uniqued)
 

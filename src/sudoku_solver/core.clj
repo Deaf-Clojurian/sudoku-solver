@@ -1,6 +1,15 @@
 (ns sudoku-solver.core
-  (:require [sudoku-solver.controllers.verifiers :as controllers.verifiers]
-            [sudoku-solver.controllers.solver :as controllers.solver])
+  (:require
+    [sudoku-solver.adapters.solver :as adapters.solver]
+    [sudoku-solver.controllers.verifiers :as controllers.verifiers]
+    [sudoku-solver.controllers.solver :as controllers.solver]
+    [ring.middleware.json :refer :all]
+    [compojure.core :refer :all]
+    [ring.util.response :refer [response]]
+    [clojure.data.json :as json]
+    [clojure.walk :refer :all]
+    [compojure.route :as route]
+    [ring.middleware.defaults :refer [wrap-defaults site-defaults]])
   (:gen-class))
 
 (def sudoku-matrix
@@ -109,3 +118,35 @@
     :solver (prn (controllers.solver/fill sudoku-matrix-input-2))
     :verifier (prn (controllers.verifiers/check sudoku-matrix-completed))
     (prn "Unknown option")))
+
+(defn mostra
+  [{:keys [body]}]
+  (let [r (-> body
+              slurp
+              json/read-str
+              controllers.verifiers/check)]
+
+    (response (json/write-str {:verified-as r}))))
+(defroutes app-routes
+           (GET "/" [] "Hello Woreeld")
+           (POST "/verify" [] (-> mostra
+                                  wrap-json-response))      ;(controllers.verifiers/check sudoku-matrix-completed)
+
+           (route/not-found "Not Found"))
+
+(def app
+
+  (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false)))
+
+(def plain-json-correct
+  [[2 1 9 5 4 3 8 7 6]
+   [5 4 3 8 7 6 2 1 9]
+   [6 7 8 9 1 2 3 4 5]
+   [4 3 2 7 6 5 1 9 8]
+   [7 6 5 1 9 8 4 3 2]
+   [8 9 1 2 3 4 5 6 7]
+   [3 2 1 6 5 4 9 8 7]
+   [6 5 4 9 8 7 3 2 1]
+   [7 8 9 1 2 3 4 5 6]])
+
+
