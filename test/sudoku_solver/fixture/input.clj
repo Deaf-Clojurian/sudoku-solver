@@ -1,6 +1,5 @@
 (ns sudoku-solver.fixture.input)
 
-
 (def sudoku-matrix-valid
   [{:quadrant :00
     :values   {:00 7 :01 3 :02 nil

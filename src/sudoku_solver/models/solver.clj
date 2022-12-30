@@ -1,4 +1,4 @@
-(ns sudoku-solver.wire.in.verifier
+(ns sudoku-solver.models.solver
   (:require
    [schema.core :as s]
    [sudoku-solver.wire.common :as wire.common]))
