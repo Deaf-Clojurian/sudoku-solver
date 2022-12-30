@@ -1,1 +1,1 @@
-["^ ","~$a-test",["^ ","~:row",5,"~:col",1,"~:fixed-arities",["~#set",[0]],"~:name","^0","~:ns","~$sudoku-solver.core-test","~:top-ns","^7"],"~:filename","/Users/caio.cascaes/Documents/Personal/dev/sudoku-solver/test/sudoku_solver/core_test.clj"]
+["^ ","~$a-test",["^ ","~:row",6,"~:col",1,"~:fixed-arities",["~#set",[0]],"~:name","^0","~:ns","~$sudoku-solver.core-test","~:top-ns","^7"],"~:filename","/Users/caio.cascaes/Documents/Personal/dev/sudoku-solver/test/sudoku_solver/core_test.clj"]

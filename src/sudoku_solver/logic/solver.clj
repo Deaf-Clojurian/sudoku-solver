@@ -3,7 +3,7 @@
    [clojure.set :as set]
    [schema.core :as s]
    [sudoku-solver.common :as common]
-   [sudoku-solver.wire.in.solver :as wire.in.solver]))
+   [sudoku-solver.models.solver :as models.solver]))
 
 (s/def sudoku-ref (atom {}))
 
@@ -21,31 +21,94 @@
                :when (not (some #{missing-number} values-without-nil))]
            missing-number))))
 
-(s/defn cross-lines-from-pos :- '(map?)
+(s/defn gather-references-from-pos :- '(map?)
+  "Get vertical lines, horizontal lines that cross and
+   contains in current quadrant. Example, given:
+   00------01------02-------
+   | R o o | o o o | o o o |   By the position represented by the R
+   | o o o | . . . | . . . |   letter, that would the position 00 of quadrant 00,
+   | o o o | . . . | . . . |   with this, the function brings all references (NOT the content!!)
+   10------11------12-------   that represents the vertical line throughout whole matrix that contains the R and
+   | o . . | . . . | . . . |   the horizontal line that also contains the R and lastly
+   | o . . | . . . | . . . |   the all ref in the quadrant where is the R, obeying the Sudoku laws. We can visualize by 'o' marks.
+   | o . . | . . . | . . . |   By example, it will bring as the response for position 00 of quadrant 00:
+   20------21------22-------
+   | o . . | . . . | . . . |   (({:matrix :00, :value :00}
+   | o . . | . . . | . . . |     {:matrix :00, :value :01}
+   | o . . | . . . | . . . |     {:matrix :00, :value :02}
+   -------------------------     {:matrix :00, :value :10}
+                                 {:matrix :00, :value :11}
+                                 {:matrix :00, :value :12}
+                                 {:matrix :00, :value :20}
+                                 {:matrix :00, :value :21}
+                                 {:matrix :00, :value :22})
+                                ({:matrix :00, :value :00}
+                                 {:matrix :00, :value :01}
+                                 {:matrix :00, :value :02}
+                                 {:matrix :01, :value :00}
+                                 {:matrix :01, :value :01}
+                                 {:matrix :01, :value :02}
+                                 {:matrix :02, :value :00}
+                                 {:matrix :02, :value :01}
+                                 {:matrix :02, :value :02})
+                                ({:matrix :00, :value :00}
+                                 {:matrix :00, :value :10}
+                                 {:matrix :00, :value :20}
+                                 {:matrix :10, :value :00}
+                                 {:matrix :10, :value :10}
+                                 {:matrix :10, :value :20}
+                                 {:matrix :20, :value :00}
+                                 {:matrix :20, :value :10}
+                                 {:matrix :20, :value :20}))
+
+                                 P.S.: ':value' is the value of reference. A refactoring to change it to :reference is in plans :grimacing: "
   [quadrant :- s/Keyword
    quadrant-pos :- s/Keyword]
   (filter #(first (filter (fn [{:keys [matrix value]}] (and (= value quadrant-pos) (= matrix quadrant))) %)) common/all-traverses))
 
 (s/defn lines-vals :- (s/maybe s/Int)
-  [{matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
-  (retrieve-val matrix-quadrant value-pos))
+  [{matrix-quadrant :matrix reference-pos :value} :- (s/pred map?)]
+  (retrieve-val matrix-quadrant reference-pos))
 
 (s/defn common-values-all-lines :- #{s/Int}
   [quadrant :- s/Keyword
    quadrant-pos :- s/Keyword]
-  (reduce set/union (map #(-> (map lines-vals %) set (disj nil)) (cross-lines-from-pos quadrant quadrant-pos))))
+  (reduce set/union (map #(-> (map lines-vals %) set (disj nil)) (gather-references-from-pos quadrant quadrant-pos))))
 
-(s/defn inject-sets
+(s/defn inject-sets-with-possible-values
   [quadrant :- s/Keyword
    [quadrant-pos value] :- '(s/Keyword s/Any)]
   (if (nil? value)
     {quadrant-pos (crude-invert-fill (common-values-all-lines quadrant quadrant-pos))}
     {quadrant-pos value}))
 
-(s/defn fill-nil :- wire.in.solver/MatrixSolving
-  [sudoku-matrix :- wire.in.solver/Matrix]
+(s/defn map->vec :- (s/pred vector?)
+  "It takes a map, e.g., {a: 5 :b 'hello'} and transform into a vector:
+  [:a 5 :b 'hello'], sequentially as values in a vector."
+  [values :- (s/pred map?)]
+  (reduce into [] values))
+
+(s/defn fill-nil :- models.solver/MatrixSolving
+  "It will fill replacing all nil values into a vector of all 1 to 9 values.
+   Example:
+       ---------------
+       |  1   4  nil |
+       | nil  6   9  |
+       |  2   7   8  |
+       ---------------
+
+       into
+
+       --------------------------------------
+       |  1  4  [1, 2, 3, 4, 5, 6, 7, 8, 9] |
+       |  [1, 2, 3, 4, 5, 6, 7, 8, 9]  6  9 |
+       |  2  7  8                           |
+       --------------------------------------
+  "
+  [sudoku-matrix :- models.solver/Matrix]
+  (reset! sudoku-ref sudoku-matrix)
   (map (fn [{:keys [quadrant values]}]
-         {:quadrant quadrant :values (into {} (map #(inject-sets quadrant %) (partition 2 (reduce into [] values))))}) sudoku-matrix))
+         {:quadrant quadrant :values (into {} (map #(inject-sets-with-possible-values quadrant %) (partition 2 (map->vec values))))}) sudoku-matrix))
 
 (s/defn replace-unique
   [quadrant :- s/Keyword
@@ -63,7 +126,7 @@
   [at-least-number :- s/Int
    quadrant :- s/Keyword
    quadrant-pos :- s/Keyword]
-  (doseq [{:keys [matrix value]} (cross-lines-from-pos quadrant quadrant-pos)]
+  (doseq [{:keys [matrix value]} (gather-references-from-pos quadrant quadrant-pos)]
     (let [retrieved-val (retrieve-val matrix value)]
       (if (set? retrieved-val)
         (swap! sudoku-ref #(assoc-in % quadrant-pos at-least-number))))))
@@ -73,7 +136,7 @@
    [quadrant-pos value] :- '(s/Keyword s/Any)]
   (if (set? value)
     (let [at-least-number (first (filter (fn [value-pos]
-                                           (reduce #(and %1 %2) (map (partial replace-unique quadrant quadrant-pos value-pos) (cross-lines-from-pos quadrant quadrant-pos)))) value))]
+                                           (reduce #(and %1 %2) (map (partial replace-unique quadrant quadrant-pos value-pos) (gather-references-from-pos quadrant quadrant-pos)))) value))]
       (if (int? at-least-number)
         (do
           (remove-val-from-cell-sets at-least-number quadrant quadrant-pos)
@@ -82,8 +145,8 @@
 
     {quadrant-pos value}))
 
-(s/defn uniqued :- wire.in.solver/MatrixSolving
-  [sudoku-matrix :- wire.in.solver/MatrixSolving]
+(s/defn uniqued :- models.solver/MatrixSolving
+  [sudoku-matrix :- models.solver/MatrixSolving]
   (reset! sudoku-ref sudoku-matrix)
   (map (fn [{:keys [quadrant values]}]
          {:quadrant quadrant :values (into {} (map #(override-unique quadrant %) (partition 2 (reduce into [] values))))})
