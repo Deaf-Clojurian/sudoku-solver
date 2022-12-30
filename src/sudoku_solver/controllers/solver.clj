@@ -23,8 +23,8 @@
   (retrieve-val! matrix-quadrant reference-pos))
 
 (s/defn common-values-by-three-laws! :- #{s/Int}
-  "Gather all values that contain further positions throughout vertical and horizontal reference
-   lines and in the quadrant"
+  "Gather all references that contain further positions throughout vertical and horizontal reference
+   lines and in the quadrant, starting with a quadrant and position as point of reference"
   [quadrant :- s/Keyword
    quadrant-pos :- s/Keyword]
   (reduce set/union (map #(-> (map lines-vals! %) set (disj nil)) (logic.solver/gather-references-from-pos quadrant quadrant-pos))))
@@ -39,7 +39,7 @@
     {quadrant-pos (logic.solver/crude-invert-fill (common-values-by-three-laws! quadrant quadrant-pos))}
     {quadrant-pos value}))
 
-(s/defn replace-nils-with-set-of-candidate-values! :- models.solver/MatrixSolving
+(s/defn replace-nils-with-set-of-candidate-values!
   "It will fill replacing all nil values into a vector of 1 to 9 values,
    but according to whole game start sudoku that should make sense, with possible
    values to solve.
@@ -66,6 +66,7 @@
                              {:quadrant quadrant :values (into {} (map #(inject-sets-with-possible-values! quadrant %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix)))
 
 
+(s/defn invalidate-sets-with-nils)
 #_(s/defn replace-unique!? :- s/Bool
     [quadrant :- s/Keyword
      quadrant-pos :- s/Keyword
@@ -138,7 +139,7 @@
         ))))
 
 
-(s/defn fill :- wire.out.solver/MatrixResult
+(s/defn fill! :- wire.out.solver/MatrixResult
   "This function 'attempts' to solve the sudoku"
   [input :- wire.in.solver/MatrixInput]
   (-> input

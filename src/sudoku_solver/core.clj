@@ -124,7 +124,7 @@
   "I don't do a whole lot ... yet."
   [& args]
   (case (keyword (first args))
-    :solver (prn (controllers.solver/fill sudoku-matrix-input-2))
+    :solver (prn (controllers.solver/fill! sudoku-matrix-input-2))
     :verifier (prn (controllers.verifiers/check plain-json-correct))
     (prn "Unknown option")))
 
