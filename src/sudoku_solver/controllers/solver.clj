@@ -7,9 +7,10 @@
    [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/defn fill :- wire.out.solver/MatrixResult
-  "This function 'attempts' to fill the square with the solution"
+  "This function 'attempts' to solve the sudoku"
   [input :- wire.in.solver/MatrixInput]
   (-> input
       adapters.solver/->matrix
       logic.solver/fill-nil
-      #_logic.solver/uniqued))
+      logic.solver/uniqued
+      clojure.pprint/pprint))
