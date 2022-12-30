@@ -12,5 +12,4 @@
   (-> input
       adapters.solver/->matrix
       logic.solver/fill-nil
-      logic.solver/uniqued
-      clojure.pprint/pprint))
+      logic.solver/solve!))

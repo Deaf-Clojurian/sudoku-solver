@@ -3,6 +3,7 @@
     [clojure.set :as set]
     [schema.core :as s]
     [sudoku-solver.common :as common]
+    [sudoku-solver.adapters.verifier :as adapters.verifier]
     [sudoku-solver.models.solver :as models.solver]))
 
 (s/def sudoku-ref (atom {}))
@@ -171,7 +172,7 @@
 (s/defn override-unique!
   [quadrant :- s/Keyword
    [quadrant-pos value] :- '(s/Keyword s/Any)]
-  (if (set? value)
+  (if (and (set? value) (= 1 (count value)))
     (let [exact-only-number (first (filter (fn [value-pos]
                                            (reduce #(and %1 %2) (map (partial replace-unique!? quadrant quadrant-pos value-pos) (gather-references-from-pos quadrant quadrant-pos)))) value))]
       (if (int? exact-only-number)
@@ -189,6 +190,17 @@
          {:quadrant quadrant :values (into {} (map #(override-unique! quadrant %) (partition 2 (map->vec values))))})
        sudoku-matrix))
 
+
+(s/defn solve!
+  [sudoku-matrix :- models.solver/MatrixSolving]
+  (let [atom-sorted-sudoku (sort-by :quadrant @sudoku-ref)
+        fresh-sorted-sudoku (sort-by :quadrant sudoku-matrix)]
+    (if (= atom-sorted-sudoku fresh-sorted-sudoku)
+      (let [correct? (sudoku-solver.logic.verifier/correct-solution? fresh-sorted-sudoku)]
+        (if correct?))
+      (do
+        (reset! sudoku-ref sudoku-matrix)
+        ))))
 ;[{:quadrant :00
 ;  :values   {:00 2 :01 1 :02 9
 ;             :10 5 :11 4 :12 3
