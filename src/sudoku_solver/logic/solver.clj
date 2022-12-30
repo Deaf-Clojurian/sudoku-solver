@@ -1,8 +1,9 @@
 (ns sudoku-solver.logic.solver
-  (:require [schema.core :as s]
-            [sudoku-solver.wire.in.solver :as wire.in.solver]
-            [sudoku-solver.common :as common]
-            [clojure.set :as set]))
+  (:require
+   [clojure.set :as set]
+   [schema.core :as s]
+   [sudoku-solver.common :as common]
+   [sudoku-solver.wire.in.solver :as wire.in.solver]))
 
 (s/def sudoku-ref (atom {}))
 
@@ -65,7 +66,7 @@
   (doseq [{:keys [matrix value]} (cross-lines-from-pos quadrant quadrant-pos)]
     (let [retrieved-val (retrieve-val matrix value)]
       (if (set? retrieved-val)
-        (swap! sudoku-ref #(update-in % [quadrant quadrant-pos]))))))
+        (swap! sudoku-ref #(assoc-in % quadrant-pos at-least-number))))))
 
 (s/defn override-unique
   [quadrant :- s/Keyword
@@ -85,7 +86,8 @@
   [sudoku-matrix :- wire.in.solver/MatrixSolving]
   (reset! sudoku-ref sudoku-matrix)
   (map (fn [{:keys [quadrant values]}]
-         {:quadrant quadrant :values (into {} (map #(override-unique quadrant %) (partition 2 (reduce into [] values))))}) @sudoku-ref))
+         {:quadrant quadrant :values (into {} (map #(override-unique quadrant %) (partition 2 (reduce into [] values))))})
+       @sudoku-ref))
 
 ;[{:quadrant :00
 ;  :values   {:00 2 :01 1 :02 9

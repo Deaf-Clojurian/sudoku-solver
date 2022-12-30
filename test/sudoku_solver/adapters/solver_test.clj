@@ -1,9 +1,9 @@
 (ns sudoku-solver.adapters.solver-test
-  (:require [clojure.test :refer :all]
-            [matcher-combinators.test :refer [match?]]
-            [sudoku-solver.adapters.solver :as adapters.solver]
-            [sudoku-solver.fixture.input :as fixture.input]))
-
+  (:require
+   [clojure.test :refer :all]
+   [matcher-combinators.test :refer [match?]]
+   [sudoku-solver.adapters.solver :as adapters.solver]
+   [sudoku-solver.fixture.input :as fixture.input]))
 
 (deftest get-values-test
   (testing "Retrieve values according to quadrant :00"

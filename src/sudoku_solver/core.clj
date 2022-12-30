@@ -1,15 +1,14 @@
 (ns sudoku-solver.core
   (:require
-    [sudoku-solver.adapters.solver :as adapters.solver]
-    [sudoku-solver.controllers.verifiers :as controllers.verifiers]
-    [sudoku-solver.controllers.solver :as controllers.solver]
-    [ring.middleware.json :refer :all]
-    [compojure.core :refer :all]
-    [ring.util.response :refer [response]]
-    [clojure.data.json :as json]
-    [clojure.walk :refer :all]
-    [compojure.route :as route]
-    [ring.middleware.defaults :refer [wrap-defaults site-defaults]])
+   [clojure.data.json :as json]
+   [clojure.walk :refer :all]
+   [compojure.core :refer :all]
+   [compojure.route :as route]
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [ring.middleware.json :refer :all]
+   [ring.util.response :refer [response]]
+   [sudoku-solver.controllers.solver :as controllers.solver]
+   [sudoku-solver.controllers.verifiers :as controllers.verifiers])
   (:gen-class))
 
 (def sudoku-matrix
@@ -88,7 +87,6 @@
                :10 1 :11 2 :12 3
                :20 4 :21 5 :22 6}}])
 
-
 (def sudoku-matrix-input
   [[nil 4 nil nil nil 3 nil 8 nil]
    [1 7 nil nil nil nil nil nil 6]
@@ -139,11 +137,11 @@
 
     (response (json/write-str {:verified-as r}))))
 (defroutes app-routes
-           (GET "/" [] "{\"sudoku-solver\": {\"routes\" : [\"verify\"]}}")
-           (POST "/verify" [] (-> verify
-                                  wrap-json-response))
+  (GET "/" [] "{\"sudoku-solver\": {\"routes\" : [\"verify\"]}}")
+  (POST "/verify" [] (-> verify
+                         wrap-json-response))
 
-           (route/not-found "{\"error\" : \"Not Found\"}"))
+  (route/not-found "{\"error\" : \"Not Found\"}"))
 
 (def app
   (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false)))

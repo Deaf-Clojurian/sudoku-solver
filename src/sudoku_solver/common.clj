@@ -1,5 +1,6 @@
 (ns sudoku-solver.common
-  (:require [sudoku-solver.adapters.quadrant :as adapters.quadrant]))
+  (:require
+   [sudoku-solver.adapters.quadrant :as adapters.quadrant]))
 
 (def pos-filler
   (for [i (range 0 3)
