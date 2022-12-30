@@ -4,3 +4,5 @@
    [sudoku-solver.wire.common :as wire.common]))
 
 (s/defschema Matrix wire.common/skeleton-internal)
+
+(s/defschema MatrixSolving wire.common/skeleton-solving)
