@@ -10,3 +10,5 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version
+      - name: Test
+        run: lein lint
