@@ -37,7 +37,13 @@
     {quadrant-pos (logic.solver/crude-invert-fill (common-values-by-three-laws! quadrant quadrant-pos))}
     {quadrant-pos value}))
 
-(s/defn replace-nils-with-set-of-candidate-values!
+(s/defn replace-set-to-content!
+  "It will verify if the value is a set and has only one value,
+  then replace with the content itself, else let it as is"
+  [[quadrant-pos value] :- '(s/Keyword s/Any)]
+  {quadrant-pos (if (and (set? value) (= 1 (count value))) (first value) value)})
+
+(s/defn replace-nils-with-set-of-candidate-values! []
   "It will fill replacing all nil values into a vector of 1 to 9 values,
    but according to whole game start sudoku that should make sense, with possible
    values to solve.
@@ -58,12 +64,11 @@
        |     2    7     8    |
        -----------------------
   "
-  [sudoku-matrix :- models.solver/Matrix]
-  (reset! sudoku-ref sudoku-matrix)
-  (reset! sudoku-ref (mapv (fn [{:keys [quadrant values]}]
-                             {:quadrant quadrant :values (into {} (map #(inject-sets-with-possible-values! quadrant %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix)))
+  (swap! sudoku-ref (fn [sudoku-matrix]
+                      (mapv (fn [{:keys [quadrant values]}]
+                              {:quadrant quadrant :values (into {} (map #(inject-sets-with-possible-values! quadrant %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
 
-(s/defn invalidate-sets-with-nils)
+(s/defn invalidate-sets-with-nils [])
 #_(s/defn replace-unique!? :- s/Bool
     [quadrant :- s/Keyword
      quadrant-pos :- s/Keyword
@@ -88,19 +93,25 @@
               (into {} (map (fn [key-values])))
               (disj values-ref at-least-number) values-ref)}) sudoku-ref))
 
-#_(s/defn override-unique!
-    [quadrant :- s/Keyword
-     [quadrant-pos value] :- '(s/Keyword s/Any)]
-    (if (and (set? value) (= 1 (count value)))
-      (let [exact-only-number (first (filter (fn [value-pos]
-                                               (reduce #(and %1 %2) (map (partial replace-unique!? quadrant quadrant-pos value-pos) (gather-references-from-pos quadrant quadrant-pos)))) value))]
-        (if (int? exact-only-number)
-          (do
-            (remove-val-from-cell-sets exact-only-number quadrant quadrant-pos)
-            {quadrant-pos exact-only-number})
-          {quadrant-pos value}))
+(s/defn replace-one-sized-sets-to-its-content! []
+  "If after replacing all nil'ed to set of values, we get a set with a unique value,
+   so the set must become the number of content itself. Example:
+  ----------------------
+  |     1    4   [3]   |
+  |     5    6    9    |
+  |     2    7    8    |
+  ----------------------
 
-      {quadrant-pos value}))
+  will become as:
+
+  ----------------------
+  |     1    4    3    |
+  |     5    6    9    |
+  |     2    7    8    |
+  ----------------------"
+  (swap! sudoku-ref (fn [sudoku-matrix]
+                      (mapv (fn [{:keys [quadrant values]}]
+                              {:quadrant quadrant :values (into {} (map #(replace-set-to-content! %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
 
 (s/defn remove-val-from-cell-sets!
   [at-least-number :- s/Int
@@ -120,6 +131,12 @@
 
 (s/defn solve!
   [sudoku-matrix :- models.solver/MatrixSolving]
+  (reset! sudoku-ref sudoku-matrix)
+
+  (replace-nils-with-set-of-candidate-values!)
+  (replace-one-sized-sets-to-its-content!)
+  (invalidate-sets-with-nils)                               ;; TODO: implement this and check about a loop that exits when the triads returns same
+
   (let [atom-sorted-sudoku (sort-by :quadrant @sudoku-ref)
         fresh-sorted-sudoku (sort-by :quadrant sudoku-matrix)]
     (if (= atom-sorted-sudoku fresh-sorted-sudoku)
@@ -131,7 +148,6 @@
 (s/defn fill! :- wire.out.solver/MatrixResult
   "This function 'attempts' to solve the sudoku"
   [input :- wire.in.solver/MatrixInput]
-  (-> input
-      adapters.solver/->matrix
-      replace-nils-with-set-of-candidate-values!
-      solve!))
+  (->> input
+       adapters.solver/->matrix
+       solve!))
