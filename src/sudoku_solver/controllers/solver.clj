@@ -1,12 +1,12 @@
 (ns sudoku-solver.controllers.solver
   (:require
-    [clojure.set :as set]
-    [schema.core :as s]
-    [sudoku-solver.adapters.solver :as adapters.solver]
-    [sudoku-solver.logic.solver :as logic.solver]
-    [sudoku-solver.models.solver :as models.solver]
-    [sudoku-solver.wire.in.solver :as wire.in.solver]
-    [sudoku-solver.wire.out.solver :as wire.out.solver]))
+   [clojure.set :as set]
+   [schema.core :as s]
+   [sudoku-solver.adapters.solver :as adapters.solver]
+   [sudoku-solver.logic.solver :as logic.solver]
+   [sudoku-solver.models.solver :as models.solver]
+   [sudoku-solver.wire.in.solver :as wire.in.solver]
+   [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/def sudoku-ref (atom {}))
 
@@ -16,7 +16,6 @@
   (some-> (filter #(= quadrant (:quadrant %)) @sudoku-ref)
           first
           (get-in [:values value-of])))
-
 
 (s/defn lines-vals! :- (s/maybe s/Int)
   [{matrix-quadrant :matrix reference-pos :value} :- (s/pred map?)]
@@ -28,7 +27,6 @@
   [quadrant :- s/Keyword
    quadrant-pos :- s/Keyword]
   (reduce set/union (map #(-> (map lines-vals! %) set (disj nil)) (logic.solver/gather-references-from-pos quadrant quadrant-pos))))
-
 
 (s/defn inject-sets-with-possible-values!
   "It will check if the value is nil, then make calculation and fill the set, else
@@ -65,7 +63,6 @@
   (reset! sudoku-ref (mapv (fn [{:keys [quadrant values]}]
                              {:quadrant quadrant :values (into {} (map #(inject-sets-with-possible-values! quadrant %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix)))
 
-
 (s/defn invalidate-sets-with-nils)
 #_(s/defn replace-unique!? :- s/Bool
     [quadrant :- s/Keyword
@@ -80,7 +77,6 @@
             (not= retrieved-val value)
             (not (contains? value retrieved-val))))))
 
-
 #_(s/defn find-and-remove
     [sudoku-ref :- models.solver/MatrixSolving
      at-least-number :- s/Int
@@ -89,10 +85,8 @@
     (map (fn [{quadrant-ref :quadrant values-ref :values}]
            {:quadrant quadrant :values
             (if (= quadrant quadrant-ref)
-              (into {} (map (fn [key-values]
-                              )))
+              (into {} (map (fn [key-values])))
               (disj values-ref at-least-number) values-ref)}) sudoku-ref))
-
 
 #_(s/defn override-unique!
     [quadrant :- s/Keyword
@@ -117,15 +111,12 @@
       (if (set? retrieved-val)
         (swap! sudoku-ref #(logic.solver/find-and-replace % at-least-number quadrant quadrant-pos))))))
 
-
-
 #_(s/defn uniqued :- models.solver/MatrixSolving
     [sudoku-matrix :- models.solver/MatrixSolving]
     (reset! sudoku-ref sudoku-matrix)
     (map (fn [{:keys [quadrant values]}]
            {:quadrant quadrant :values (into {} (map #(override-unique! quadrant %) (partition 2 (map->vec values))))})
          sudoku-matrix))
-
 
 (s/defn solve!
   [sudoku-matrix :- models.solver/MatrixSolving]
@@ -135,9 +126,7 @@
       (let [correct? (sudoku-solver.logic.verifier/correct-solution? fresh-sorted-sudoku)]
         (if correct?))
       (do
-        (reset! sudoku-ref sudoku-matrix)
-        ))))
-
+        (reset! sudoku-ref sudoku-matrix)))))
 
 (s/defn fill! :- wire.out.solver/MatrixResult
   "This function 'attempts' to solve the sudoku"

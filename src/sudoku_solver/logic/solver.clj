@@ -1,10 +1,8 @@
 (ns sudoku-solver.logic.solver
   (:require
-    [schema.core :as s]
-    [sudoku-solver.common :as common]
-    [sudoku-solver.models.solver :as models.solver]))
-
-
+   [schema.core :as s]
+   [sudoku-solver.common :as common]
+   [sudoku-solver.models.solver :as models.solver]))
 
 (s/defn crude-invert-fill :- #{s/Int}
   "With the all availables values, just bring the inversed values, those
@@ -62,15 +60,11 @@
    quadrant-pos :- s/Keyword]
   (filter #(first (filter (fn [{:keys [matrix value]}] (and (= value quadrant-pos) (= matrix quadrant))) %)) common/all-traverses))
 
-
 (s/defn map->vec :- (s/pred vector?)
   "It takes a map, e.g., {a: 5 :b 'hello'} and transform into a vector:
   [:a 5 :b 'hello'], sequentially as values in a vector."
   [values :- (s/pred map?)]
   (reduce into [] values))
-
-
-
 
 (s/defn find-and-replace
   [sudoku-ref :- models.solver/MatrixSolving
@@ -82,9 +76,6 @@
           (if (= quadrant quadrant-ref)
             (assoc values-ref quadrant-pos at-least-number)
             values-ref)}) sudoku-ref))
-
-
-
 
 ;[{:quadrant :00
 ;  :values   {:00 2 :01 1 :02 9
