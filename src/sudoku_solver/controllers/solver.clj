@@ -51,7 +51,7 @@
   [[quadrant-pos value] :- '(s/Keyword s/Any)]
   {quadrant-pos (if (and (set? value) (= 1 (count value))) (first value) value)})
 
-(s/defn ^:private replace-nils-with-set-of-candidate-values! []
+(s/defn ^:private replace-nils-with-set-of-candidate-values!
   "It will fill replacing all nil values into a vector of 1 to 9 values,
    but according to whole game start sudoku that should make sense, with possible
    values to solve.
@@ -71,13 +71,13 @@
        |  [3, 5]  6     9    |
        |     2    7     8    |
        -----------------------
-  "
+  " []
   (swap! sudoku-ref (fn [sudoku-matrix]
                       (mapv (fn [{:keys [quadrant values]}]
                               (let [replenish-candidate-values (into {} (map #(inject-sets-with-possible-values! quadrant %) (partition 2 (logic.solver/map->vec values))))]
                                 {:quadrant quadrant :values replenish-candidate-values})) sudoku-matrix))))
 
-(s/defn invalidate-sets-with-nils []
+(s/defn invalidate-sets-with-nils
   "It will invalidate all sets, setting back to nil values
 
    Example (take it as a single visualization, the reality is by whole 9 quadrants):
@@ -96,6 +96,7 @@
        |     2    7     8    |
        -----------------------
   "
+  []
   (swap! sudoku-ref (fn [sudoku-matrix]
                       (mapv (fn [{:keys [quadrant values]}]
                               {:quadrant quadrant :values (into {} (map #(inject-nil-on-sets %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
@@ -123,7 +124,7 @@
               (into {} (map (fn [key-values])))
               (disj values-ref at-least-number) values-ref)}) sudoku-ref))
 
-(s/defn replace-one-sized-sets-to-its-content! []
+(s/defn replace-one-sized-sets-to-its-content!
   "If, after replacing all nil'ed to set of values, we get a set with a unique value,
    so the set must become the number of content itself. Example:
   ----------------------
@@ -139,18 +140,19 @@
   |     5    6    9    |
   |     2    7    8    |
   ----------------------"
+  []
   (swap! sudoku-ref (fn [sudoku-matrix]
                       (mapv (fn [{:keys [quadrant values]}]
                               {:quadrant quadrant :values (into {} (map #(replace-set-to-content! %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
 
-(s/defn remove-val-from-cell-sets!
-  [at-least-number :- s/Int
-   quadrant :- s/Keyword
-   quadrant-pos :- s/Keyword]
-  (doseq [{:keys [matrix value]} (logic.solver/gather-references-from-pos quadrant quadrant-pos)]
-    (let [retrieved-val (retrieve-val! matrix value)]
-      (if (set? retrieved-val)
-        (swap! sudoku-ref #(logic.solver/find-and-replace % at-least-number quadrant quadrant-pos))))))
+#_(s/defn remove-val-from-cell-sets!
+    [at-least-number :- s/Int
+     quadrant :- s/Keyword
+     quadrant-pos :- s/Keyword]
+    (doseq [{:keys [matrix value]} (logic.solver/gather-references-from-pos quadrant quadrant-pos)]
+      (let [retrieved-val (retrieve-val! matrix value)]
+        (if (set? retrieved-val)
+          (swap! sudoku-ref #(logic.solver/find-and-replace % at-least-number quadrant quadrant-pos))))))
 
 #_(s/defn uniqued :- models.solver/MatrixSolving
     [sudoku-matrix :- models.solver/MatrixSolving]

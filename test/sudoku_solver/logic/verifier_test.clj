@@ -1,6 +1,6 @@
 (ns sudoku-solver.logic.verifier-test
   (:require
-   [clojure.test :refer :all]
+   [clojure.test :refer [deftest is testing]]
    [sudoku-solver.fixture.input :as fixture.input]
    [sudoku-solver.logic.verifier :refer [correct-solution? invalid-values?]]))
 

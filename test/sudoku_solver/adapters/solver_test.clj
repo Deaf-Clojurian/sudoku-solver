@@ -1,6 +1,6 @@
 (ns sudoku-solver.adapters.solver-test
   (:require
-   [clojure.test :refer :all]
+   [clojure.test :refer [deftest is testing]]
    [matcher-combinators.test :refer [match?]]
    [sudoku-solver.adapters.solver :as adapters.solver]
    [sudoku-solver.fixture.input :as fixture.input]))
