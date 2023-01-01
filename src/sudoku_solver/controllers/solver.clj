@@ -74,8 +74,8 @@
   "
   (swap! sudoku-ref (fn [sudoku-matrix]
                       (mapv (fn [{:keys [quadrant values]}]
-                              (let [reple (into {} (map #(inject-sets-with-possible-values! quadrant %) (partition 2 (logic.solver/map->vec values))))]
-                                {:quadrant quadrant :values reple})) sudoku-matrix))))
+                              (let [replenish-candidate-values (into {} (map #(inject-sets-with-possible-values! quadrant %) (partition 2 (logic.solver/map->vec values))))]
+                                {:quadrant quadrant :values replenish-candidate-values})) sudoku-matrix))))
 
 (s/defn invalidate-sets-with-nils []
   "It will invalidate all sets, setting back to nil values
@@ -124,7 +124,7 @@
               (disj values-ref at-least-number) values-ref)}) sudoku-ref))
 
 (s/defn replace-one-sized-sets-to-its-content! []
-  "If after replacing all nil'ed to set of values, we get a set with a unique value,
+  "If, after replacing all nil'ed to set of values, we get a set with a unique value,
    so the set must become the number of content itself. Example:
   ----------------------
   |     1    4   [3]   |

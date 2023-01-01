@@ -2,7 +2,8 @@
   (:require
    [schema.core :as s]
    [sudoku-solver.common :as common]
-   [sudoku-solver.models.solver :as models.solver]))
+   [sudoku-solver.models.solver :as models.solver]
+   [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/defn crude-invert-fill :- #{s/Int}
   "With the all availables values, just bring the inversed values, those
@@ -113,3 +114,9 @@
 ;  :values   {:00 7 :01 8 :02 9
 ;             :10 1 :11 2 :12 3
 ;             :20 4 :21 5 :22 6}}]
+
+(s/defn pick-value :- s/Str
+  [matrix-result :- wire.out.solver/MatrixResult
+   line :- s/Int
+   col :- s/Int]
+  (or (-> matrix-result (nth line) (nth col)) " "))

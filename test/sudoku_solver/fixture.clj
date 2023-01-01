@@ -1,16 +1,6 @@
-(ns sudoku-solver.core
-  (:require
-   [clojure.data.json :as json]
-   [clojure.walk :refer :all]
-   [compojure.core :refer :all]
-   [compojure.route :as route]
-   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-   [ring.middleware.json :refer :all]
-   [ring.util.response :refer [response]]
-   [sudoku-solver.adapters.solver :as adapters.solver]
-   [sudoku-solver.controllers.solver :as controllers.solver]
-   [sudoku-solver.controllers.verifiers :as controllers.verifiers])
-  (:gen-class))
+(ns sudoku-solver.fixture
+  (:require [clojure.test :refer :all]))
+
 
 (def sudoku-matrix
   [{:quadrant :00
@@ -165,54 +155,13 @@
    [6 5 4 9 8 7 1 2 3]
    [9 8 7 3 2 1 4 5 6]])
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (case (keyword (first args))
-    :solver (prn (controllers.solver/fill! sudoku-matrix-input-expert-level))
-    :verifier (prn (controllers.verifiers/check plain-json-correct))
-    (prn "Unknown option")))
-
-(defn verify
-  [{:keys [body]}]
-  (response
-   (json/write-str
-    {:verified-as (-> body
-                      slurp
-                      json/read-str
-                      controllers.verifiers/check)})))
-
-(defn solve
-  [{:keys [body]}]
-  (response
-   (json/write-str (-> body
-                       slurp
-                       json/read-str
-                       controllers.solver/fill!))))
-
-(defn solve-pretty
-  [{:keys [body]}]
-  (response
-   (-> body
-       slurp
-       json/read-str
-       controllers.solver/fill!
-       adapters.solver/->prettified)))
-
-(defroutes app-routes
-  (GET "/" [] "{\"sudoku-solver\": {\"routes\" : [\"verify\"]}}")
-  (POST "/verify" [] (-> verify
-                         wrap-json-response))
-  (POST "/solve" [] (-> solve
-                        wrap-json-response))
-
-  (POST "/solve/pretty" [] (-> solve-pretty))
-
-  (route/not-found "{\"error\" : \"Not Found\"}"))
-
-(def app
-  (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false)))
-
-
-
-
+(def plain-json-incomplete
+  [[2 1 9 5 4 3 6 7 8]
+   [5 4 3 8 7 6 9 1 2]
+   [8 7 6 2 1 nil 3 4 5]
+   [4 3 2 7 6 5 8 9 1]
+   [7 6 5 1 9 8 2 3 4]
+   [nil 9 8 4 3 2 5 6 7]
+   [3 2 1 6 5 4 7 8 9]
+   [6 5 4 9 8 7 1 2 3]
+   [9 8 7 3 2 1 4 5 6]])
