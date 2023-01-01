@@ -98,7 +98,7 @@
    [nil 8 nil nil 3 nil nil 2 nil]
    [nil nil 5 nil nil 8 9 nil nil]])
 
-(def sudoku-matrix-input-2
+(def sudoku-matrix-input-expert-level
   [[nil nil 3 8 nil nil nil 9 7]
    [6 nil nil nil nil 3 8 nil 1]
    [2 nil nil nil nil nil 5 nil nil]
@@ -109,22 +109,33 @@
    [nil nil nil 6 5 9 nil nil nil]
    [nil nil nil nil 8 nil nil 5 nil]])
 
+(def sudoku-matrix-input-easy-level
+  [[1 4 2 nil 9 7 nil 6 3]
+   [7 nil 3 4 6 nil nil nil nil]
+   [nil nil 5 3 8 2 nil 4 1]
+   [3 7 4 nil nil 6 nil nil 8]
+   [5 2 9 8 7 3 6 1 4]
+   [nil 6 1 9 nil nil 3 nil 7]
+   [nil 1 6 7 nil nil nil 3 9]
+   [nil 5 nil nil nil nil 4 7 6]
+   [9 nil 7 6 4 nil nil 8 nil]])
+
 (def plain-json-correct
-  [[2 1 9 5 4 3 6 7 8]
-   [5 4 3 8 7 6 9 1 2]
-   [8 7 6 2 1 9 3 4 5]
-   [4 3 2 7 6 5 8 9 1]
-   [7 6 5 1 9 8 2 3 4]
-   [1 9 8 4 3 2 5 6 7]
-   [3 2 1 6 5 4 7 8 9]
-   [6 5 4 9 8 7 1 2 3]
-   [9 8 7 3 2 1 4 5 6]])
+  [[4 3 8 7 9 5 6 1 2]
+   [7 9 2 5 6 1 8 3 4]
+   [1 8 5 2 3 7 9 4 6]
+   [9 1 6 4 8 2 3 5 7]
+   [1 3 7 8 5 4 9 2 6]
+   [2 9 3 1 4 5 6 7 8]
+   [6 5 9 2 4 1 7 8 3]
+   [5 4 1 6 2 7 3 9 8]
+   [3 6 7 4 8 2 1 5 9]])
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (case (keyword (first args))
-    :solver (prn (controllers.solver/fill! sudoku-matrix-input-2))
+    :solver (prn (controllers.solver/fill! sudoku-matrix-input-easy-level))
     :verifier (prn (controllers.verifiers/check plain-json-correct))
     (prn "Unknown option")))
 
