@@ -1,20 +1,14 @@
 (ns sudoku-solver.logic.solver
   (:require
-   [clojure.set :as set]
    [schema.core :as s]
    [sudoku-solver.common :as common]
    [sudoku-solver.models.solver :as models.solver]))
 
-(s/def sudoku-ref (atom {}))
-
-(s/defn retrieve-val
-  [quadrant :- s/Keyword
-   value-of :- s/Keyword]
-  (some-> (filter #(= quadrant (:quadrant %)) @sudoku-ref)
-          first
-          (get-in [:values value-of])))
-
 (s/defn crude-invert-fill :- #{s/Int}
+  "With the all availables values, just bring the inversed values, those
+   that are missing and should be the options to solve the Sudoku. Example:
+   By three laws, given a position, we get resulted as #{1 2 3 4}, so to fill in, it must be one of:
+   #{5 6 7 8 9}, then using this as reference"
   [values :- #{s/Int}]
   (let [values-without-nil (filter #(not (nil? %)) values)]
     (set (for [missing-number (range 1 10)
@@ -66,91 +60,22 @@
    quadrant-pos :- s/Keyword]
   (filter #(first (filter (fn [{:keys [matrix value]}] (and (= value quadrant-pos) (= matrix quadrant))) %)) common/all-traverses))
 
-(s/defn lines-vals :- (s/maybe s/Int)
-  [{matrix-quadrant :matrix reference-pos :value} :- (s/pred map?)]
-  (retrieve-val matrix-quadrant reference-pos))
-
-(s/defn common-values-all-lines :- #{s/Int}
-  [quadrant :- s/Keyword
-   quadrant-pos :- s/Keyword]
-  (reduce set/union (map #(-> (map lines-vals %) set (disj nil)) (gather-references-from-pos quadrant quadrant-pos))))
-
-(s/defn inject-sets-with-possible-values
-  [quadrant :- s/Keyword
-   [quadrant-pos value] :- '(s/Keyword s/Any)]
-  (if (nil? value)
-    {quadrant-pos (crude-invert-fill (common-values-all-lines quadrant quadrant-pos))}
-    {quadrant-pos value}))
-
 (s/defn map->vec :- (s/pred vector?)
   "It takes a map, e.g., {a: 5 :b 'hello'} and transform into a vector:
   [:a 5 :b 'hello'], sequentially as values in a vector."
   [values :- (s/pred map?)]
   (reduce into [] values))
 
-(s/defn fill-nil :- models.solver/MatrixSolving
-  "It will fill replacing all nil values into a vector of all 1 to 9 values.
-   Example:
-       ---------------
-       |  1   4  nil |
-       | nil  6   9  |
-       |  2   7   8  |
-       ---------------
-
-       into
-
-       --------------------------------------
-       |  1  4  [1, 2, 3, 4, 5, 6, 7, 8, 9] |
-       |  [1, 2, 3, 4, 5, 6, 7, 8, 9]  6  9 |
-       |  2  7  8                           |
-       --------------------------------------
-  "
-  [sudoku-matrix :- models.solver/Matrix]
-  (reset! sudoku-ref sudoku-matrix)
-  (map (fn [{:keys [quadrant values]}]
-         {:quadrant quadrant :values (into {} (map #(inject-sets-with-possible-values quadrant %) (partition 2 (map->vec values))))}) sudoku-matrix))
-
-(s/defn replace-unique
-  [quadrant :- s/Keyword
-   quadrant-pos :- s/Keyword
-   value :- s/Any
-   {matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
-  (or (and (= quadrant-pos value-pos)
-           (= quadrant matrix-quadrant))
-      (let [retrieved-val (retrieve-val matrix-quadrant value-pos)]
-        (if (set? retrieved-val)
-          (not (contains? retrieved-val value))
-          (not= retrieved-val value)))))
-
-(s/defn remove-val-from-cell-sets
-  [at-least-number :- s/Int
+(s/defn find-and-replace
+  [sudoku-ref :- models.solver/MatrixSolving
+   at-least-number :- s/Int
    quadrant :- s/Keyword
    quadrant-pos :- s/Keyword]
-  (doseq [{:keys [matrix value]} (gather-references-from-pos quadrant quadrant-pos)]
-    (let [retrieved-val (retrieve-val matrix value)]
-      (if (set? retrieved-val)
-        (swap! sudoku-ref #(assoc-in % quadrant-pos at-least-number))))))
-
-(s/defn override-unique
-  [quadrant :- s/Keyword
-   [quadrant-pos value] :- '(s/Keyword s/Any)]
-  (if (set? value)
-    (let [at-least-number (first (filter (fn [value-pos]
-                                           (reduce #(and %1 %2) (map (partial replace-unique quadrant quadrant-pos value-pos) (gather-references-from-pos quadrant quadrant-pos)))) value))]
-      (if (int? at-least-number)
-        (do
-          (remove-val-from-cell-sets at-least-number quadrant quadrant-pos)
-          {quadrant-pos at-least-number})
-        {quadrant-pos value}))
-
-    {quadrant-pos value}))
-
-(s/defn uniqued :- models.solver/MatrixSolving
-  [sudoku-matrix :- models.solver/MatrixSolving]
-  (reset! sudoku-ref sudoku-matrix)
-  (map (fn [{:keys [quadrant values]}]
-         {:quadrant quadrant :values (into {} (map #(override-unique quadrant %) (partition 2 (reduce into [] values))))})
-       @sudoku-ref))
+  (map (fn [{quadrant-ref :quadrant values-ref :values}]
+         {:quadrant quadrant-ref :values
+          (if (= quadrant quadrant-ref)
+            (assoc values-ref quadrant-pos at-least-number)
+            values-ref)}) sudoku-ref))
 
 ;[{:quadrant :00
 ;  :values   {:00 2 :01 1 :02 9
