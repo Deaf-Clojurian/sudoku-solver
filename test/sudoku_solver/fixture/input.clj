@@ -200,3 +200,14 @@
    [nil nil nil nil 6 nil 3 7 nil]
    [nil 8 nil nil 3 nil nil 2 nil]
    [nil nil 5 nil nil 8 9 nil nil]])
+
+(def plain-json-incomplete
+  [[2 1 9 5 4 3 6 7 8]
+   [5 4 3 8 7 6 9 1 2]
+   [8 7 6 2 1 nil 3 4 5]
+   [4 3 2 7 6 5 8 9 1]
+   [7 6 5 1 9 8 2 3 4]
+   [nil 9 8 4 3 2 5 6 7]
+   [3 2 1 6 5 4 7 8 9]
+   [6 5 4 9 8 7 1 2 3]
+   [9 8 7 3 2 1 4 5 6]])

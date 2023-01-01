@@ -22,7 +22,8 @@
       (< 9)))
 
 (s/defn collision? :- s/Bool
-  [m :- wire.in.verifier/Matrix])
+  [_m :- wire.in.verifier/Matrix]
+  false)
 
 (s/defn correct-solution? :- s/Bool
   [m :- wire.in.verifier/Matrix]

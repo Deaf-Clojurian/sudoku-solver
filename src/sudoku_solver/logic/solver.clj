@@ -2,7 +2,7 @@
   (:require
    [schema.core :as s]
    [sudoku-solver.common :as common]
-   [sudoku-solver.models.solver :as models.solver]))
+   [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/defn crude-invert-fill :- #{s/Int}
   "With the all availables values, just bring the inversed values, those
@@ -66,16 +66,16 @@
   [values :- (s/pred map?)]
   (reduce into [] values))
 
-(s/defn find-and-replace
-  [sudoku-ref :- models.solver/MatrixSolving
-   at-least-number :- s/Int
-   quadrant :- s/Keyword
-   quadrant-pos :- s/Keyword]
-  (map (fn [{quadrant-ref :quadrant values-ref :values}]
-         {:quadrant quadrant-ref :values
-          (if (= quadrant quadrant-ref)
-            (assoc values-ref quadrant-pos at-least-number)
-            values-ref)}) sudoku-ref))
+#_(s/defn find-and-replace
+    [sudoku-ref :- models.solver/MatrixSolving
+     at-least-number :- s/Int
+     quadrant :- s/Keyword
+     quadrant-pos :- s/Keyword]
+    (map (fn [{quadrant-ref :quadrant values-ref :values}]
+           {:quadrant quadrant-ref :values
+            (if (= quadrant quadrant-ref)
+              (assoc values-ref quadrant-pos at-least-number)
+              values-ref)}) sudoku-ref))
 
 ;[{:quadrant :00
 ;  :values   {:00 2 :01 1 :02 9
@@ -113,3 +113,9 @@
 ;  :values   {:00 7 :01 8 :02 9
 ;             :10 1 :11 2 :12 3
 ;             :20 4 :21 5 :22 6}}]
+
+(s/defn pick-value :- s/Str
+  [matrix-result :- wire.out.solver/MatrixResult
+   line :- s/Int
+   col :- s/Int]
+  (or (-> matrix-result (nth line) (nth col)) " "))
