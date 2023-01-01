@@ -42,7 +42,6 @@
 (s/defn ->singularity :- wire.out.solver/MatrixResult
   "It adapts back to the vec way to show result"
   [matrix :- models.solver/MatrixSolving]
-  (prn matrix)
   #_(vec
      (partition 3 (for [qx (range-3 0)
                         qy (range-3 0)
