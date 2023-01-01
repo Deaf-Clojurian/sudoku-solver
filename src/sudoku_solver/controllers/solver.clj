@@ -176,7 +176,6 @@
 (s/defn fill! :- wire.out.solver/MatrixResult
   "This function 'attempts' to solve the sudoku"
   [input :- wire.in.solver/MatrixInput]
-  (prn input)
   (->> input
        adapters.solver/->matrix
        solve!
