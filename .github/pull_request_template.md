@@ -4,4 +4,4 @@
 ## 🧐 Solution
 <!-- how is the PR solving the problem? -->
 
-~Set a giphy!!~ ![](paste the url here!)
+<!-- Set a giphy!! -->![](paste_the_url_here!)
