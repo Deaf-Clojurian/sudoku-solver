@@ -1,14 +1,9 @@
 (ns sudoku-solver.core
   (:require
-   [clojure.data.json :as json]
-   [compojure.core :refer [defroutes GET POST]]
-   [compojure.route :as route]
    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-   [ring.middleware.json :refer [wrap-json-response]]
-   [ring.util.response :refer [response]]
-   [sudoku-solver.adapters.solver :as adapters.solver]
    [sudoku-solver.controllers.solver :as controllers.solver]
-   [sudoku-solver.controllers.verifiers :as controllers.verifiers])
+   [sudoku-solver.controllers.verifiers :as controllers.verifiers]
+   [sudoku-solver.diplomat.http-server :as diplomat.http-server])
   (:gen-class))
 
 #_(def sudoku-matrix
@@ -165,54 +160,13 @@
    [9 8 7 3 2 1 4 5 6]])
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Use it to run through 'lein run <arg>'"
   [& args]
   (case (keyword (first args))
     :solver (prn (controllers.solver/fill! sudoku-matrix-input-expert-level))
     :verifier (prn (controllers.verifiers/check plain-json-correct))
     (prn "Unknown option")))
 
-(defn verify
-  [{:keys [body]}]
-  (response
-   (json/write-str
-    {:verified-as (-> body
-                      slurp
-                      json/read-str
-                      controllers.verifiers/check)})))
-
-(defn solve
-  [{:keys [body]}]
-  (response
-   (json/write-str (-> body
-                       slurp
-                       json/read-str
-                       controllers.solver/fill!))))
-
-(defn solve-pretty
-  [{:keys [body]}]
-  (response
-   (-> body
-       slurp
-       json/read-str
-       controllers.solver/fill!
-       adapters.solver/->prettified)))
-
-(defroutes app-routes
-  (GET "/" [] "{\"sudoku-solver\": {\"routes\" : [\"verify\"]}}")
-  (POST "/verify" [] (-> verify
-                         wrap-json-response))
-  (POST "/solve" [] (-> solve
-                        wrap-json-response))
-
-  (POST "/solve/pretty" [] (-> solve-pretty))
-
-  (route/not-found "{\"error\" : \"Not Found\"}"))
-
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def app
-  (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false)))
-
-
-
-
+  (wrap-defaults diplomat.http-server/app-routes (assoc-in site-defaults [:security :anti-forgery] false)))

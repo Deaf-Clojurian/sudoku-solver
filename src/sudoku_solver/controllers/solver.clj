@@ -161,7 +161,7 @@
            {:quadrant quadrant :values (into {} (map #(override-unique! quadrant %) (partition 2 (map->vec values))))})
          sudoku-matrix))
 
-(s/defn replenish-with-remained-spots []
+(s/defn replenish-with-remained-spots! []
   (let [initial-state-sudoku @sudoku-ref]
     (replace-nils-with-set-of-candidate-values!)
     (replace-one-sized-sets-to-its-content!)
@@ -172,7 +172,7 @@
 (s/defn solve!
   [sudoku-matrix :- models.solver/MatrixSolving]
   (reset! sudoku-ref sudoku-matrix)
-  (replenish-with-remained-spots)
+  (replenish-with-remained-spots!)
   @sudoku-ref)
 
 (s/defn fill! :- wire.out.solver/MatrixResult
