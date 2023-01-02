@@ -37,6 +37,16 @@
                   (logic.solver/crude-invert-fill (common-values-by-three-laws! quadrant quadrant-pos))
                   value)})
 
+(s/defn ^:private inject-one-occurrence-value!
+  "It will check if the value is nil, then make calculation and fill the set, else
+   just forward value, keeping"
+  [quadrant :- s/Keyword
+   [quadrant-pos value] :- '(s/Keyword s/Any)]
+  {quadrant-pos (if (set? value)
+                  (logic.solver/detect-one-occurrence value quadrant quadrant-pos)
+                  value)})
+
+
 (s/defn ^:private inject-nil-on-sets
   "It will check if the value is a set, then replace it to nil, else
    just forward value, keeping"
@@ -145,6 +155,31 @@
                       (mapv (fn [{:keys [quadrant values]}]
                               {:quadrant quadrant :values (into {} (map #(replace-set-to-content! %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
 
+
+(s/defn replace-one-occurrence-to-its-content!
+  "Given a setup of set of candidate numbers, we may notice that there is only one occurrence
+   regarding at least of one of three sudoku laws, it will bring to front and become as a solution
+   number. Example:
+
+  ----------------------
+  |     1    4  [3, 5] |
+  |     5    6    9    |
+  |     2    7    8    |
+  ----------------------
+
+  the three is unique result, regarding for quadrant law, so:
+
+  ----------------------
+  |     1    4    3    |
+  |     5    6    9    |
+  |     2    7    8    |
+  ----------------------"
+  []
+  (swap! sudoku-ref (fn [sudoku-matrix]
+                      (mapv (fn [{:keys [quadrant values]}]
+                              (let [replenish-one-occurrence-values (into {} (map #(inject-one-occurrence-value! quadrant %) (partition 2 (logic.solver/map->vec values))))]
+                                {:quadrant quadrant :values replenish-one-occurrence-values})) sudoku-matrix))))
+
 #_(s/defn remove-val-from-cell-sets!
     [at-least-number :- s/Int
      quadrant :- s/Keyword
@@ -173,6 +208,7 @@
   [sudoku-matrix :- models.solver/MatrixSolving]
   (reset! sudoku-ref sudoku-matrix)
   (replenish-with-remained-spots!)
+  (replace-one-occurrence-to-its-content!)
   @sudoku-ref)
 
 (s/defn fill! :- wire.out.solver/MatrixResult

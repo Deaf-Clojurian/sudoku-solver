@@ -15,6 +15,7 @@
                :when (not (some #{missing-number} values-without-nil))]
            missing-number))))
 
+
 (s/defn gather-references-from-pos :- '(map?)
   "Get vertical lines, horizontal lines that cross and
    contains in current quadrant. Example, given:
@@ -59,6 +60,15 @@
   [quadrant :- s/Keyword
    quadrant-pos :- s/Keyword]
   (filter #(first (filter (fn [{:keys [matrix value]}] (and (= value quadrant-pos) (= matrix quadrant))) %)) common/all-traverses))
+
+
+(s/defn detect-one-occurrence :- (s/conditional #{s/Int} s/Int)
+  "Detect if the number that contains in a set is the unique throughout whole column, line
+   or quadrant, then replace it, else, go next"
+  [value :- (s/pred set?)
+   quadrant :- s/Keyword
+   quadrant-pos :- s/Keyword]
+  (map (fn [v]) (gather-references-from-pos quadrant quadrant-pos)))
 
 (s/defn map->vec :- (s/pred vector?)
   "It takes a map, e.g., {a: 5 :b 'hello'} and transform into a vector:
