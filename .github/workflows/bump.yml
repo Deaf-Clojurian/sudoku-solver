@@ -18,13 +18,13 @@ jobs:
         run: lein ancient upgrade
       - name: Check for changes
         run: |
-            CHANGES=$(git diff --shortstat 2> /dev/null | tail -n1)
-           if [ -n "$CHANGES" ]; then
-             echo "There are changes to be committed"
-           else
-             echo "Nothing to commit, exiting"
-             exit 0
-           fi
+          CHANGES=$(git diff --shortstat 2> /dev/null | tail -n1)
+          if [ -n "$CHANGES" ]; then
+            echo "There are changes to be committed"
+          else
+            echo "Nothing to commit, exiting"
+            exit 0
+          fi
       - name: Commit changes
         run: |
           git config --local user.email "caio.cascaes@gmail.com"
