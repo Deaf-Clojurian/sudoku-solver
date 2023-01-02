@@ -16,10 +16,18 @@ jobs:
           mv lein /usr/local/bin/lein
       - name: Bump dependencies
         run: lein ancient upgrade
-      - name: Commit and push changes
+      - name: Commit changes
         run: |
           git config --local user.email "caio.cascaes@gmail.com"
           git config --local user.name "Caio Cascaes"
           git add project.clj
           git commit -m "Bump dependencies"
-          git push origin HEAD
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: "Bump dependencies"
+          body: "This pull request bumps the dependencies to the latest versions."
+          reviewers: "deafjava"
+          assignees: "deafjava"
+          base: "master"
+          token: ${{ secrets.GITHUB_TOKEN }}
