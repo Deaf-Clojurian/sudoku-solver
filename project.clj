@@ -11,7 +11,7 @@
                  [ring/ring-json "0.5.1"]
                  [ring/ring-jetty-adapter "1.9.5"]
                  [org.clojure/data.json "2.4.0"]
-                 [compojure "1.7.0"]]
+                 [compojure "1.6.0"]]
   :plugins [[lein-ring "0.12.6"]
             [lein-ancient "1.0.0-RC3"]
             [com.github.clojure-lsp/lein-clojure-lsp "1.3.17"]]
