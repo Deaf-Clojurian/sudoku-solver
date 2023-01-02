@@ -38,5 +38,5 @@ jobs:
           body: "This pull request bumps the dependencies to the latest versions."
           reviewers: "deafjava"
           assignees: "deafjava"
-          base: "master"
+          base: "main"
           token: ${{ secrets.GITHUB_TOKEN }}
