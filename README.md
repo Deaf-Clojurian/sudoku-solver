@@ -1,44 +1,26 @@
 # sudoku-solver
 
-FIXME: description
+Hard to solve some mind tricking Sudokus? Or just want to challenge if a bot can solve this well? Or want to cheat your friend in a head-to-head game? Just feed me with a Sudoku challenge!
 
-## Installation
+[![CI/CD](https://github.com/Deaf-Clojurian/sudoku-solver/actions/workflows/cicd.yml/badge.svg)](https://github.com/Deaf-Clojurian/sudoku-solver/actions/workflows/cicd.yml)
 
-Download from http://example.com/FIXME.
 
 ## Usage
 
-FIXME: explanation
 
-    $ java -jar sudoku-solver-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
 
 ## License
 
-Copyright © 2022 FIXME
+This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
 
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
+You are free to:
 
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.
+- Share: copy and redistribute the material in any medium or format
+- Adapt: remix, transform, and build upon the material for any purpose, even commercially
+
+Under the following terms:
+
+- Attribution: You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+- ShareAlike: If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+
+For more information, see https://creativecommons.org/licenses/by-sa/4.0/.
