@@ -2,15 +2,16 @@ name: Bump version
 
 on:
   schedule:
-    - cron: "0 12 * * 1"
-      env:
-        TZ: America/Sao_Paulo
+    - cron: "*/5 * * * *"
 
 jobs:
   bump-version:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set time zone
+        env:
+          TZ: America/Sao_Paulo
       - name: Install Leiningen
         run: |
           curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
@@ -25,3 +26,4 @@ jobs:
           git add project.clj
           git commit -m "Bump version"
           git push origin HEAD
+
