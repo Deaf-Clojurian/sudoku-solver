@@ -2,7 +2,7 @@ name: Bump version
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 12 * * 1"
       env:
         TZ: America/Sao_Paulo
 
