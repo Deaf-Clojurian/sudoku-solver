@@ -1,0 +1,25 @@
+name: Bump version
+
+on:
+  schedule:
+    - cron: "40 21 * * *"
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Leiningen
+        run: |
+          curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+          chmod +x lein
+          mv lein /usr/local/bin/lein
+      - name: Bump version
+        run: lein version bump
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "caio.cascaes@gmail.com"
+          git config --local user.name "Caio Cascaes"
+          git add project.clj
+          git commit -m "Bump version"
+          git push origin HEAD
