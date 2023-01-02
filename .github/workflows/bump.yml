@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set time zone
-        env:
+        with:
           TZ: America/Sao_Paulo
       - name: Install Leiningen
         run: |
