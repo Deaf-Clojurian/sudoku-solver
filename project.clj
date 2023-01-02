@@ -13,7 +13,7 @@
                  [org.clojure/data.json "2.4.0"]
                  [compojure "1.7.0"]]
   :plugins [[lein-ring "0.12.6"]
-            [lein-ancient "0.7.5"]
+            [lein-ancient "1.0.0-RC3"]
             [com.github.clojure-lsp/lein-clojure-lsp "1.3.17"]]
   :ring {:handler sudoku-solver.core/app}
   :clojure-lsp {:settings {:clean {:ns-inner-blocks-indentation :same-line}}} ;; API options
