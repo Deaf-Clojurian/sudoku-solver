@@ -35,8 +35,15 @@
        controllers.solver/fill!
        adapters.solver/->prettified)))
 
+(defn show-paths
+  [_]
+  (response
+   {:sudoku-solver {:routes ["verify"
+                             "solve"
+                             "solve/pretty"]}}))
+
 (defroutes app-routes
-  (GET "/" [] "{\"sudoku-solver\": {\"routes\" : [\"verify\", \"solve\", \"solve/pretty\"]}}")
+  (GET "/" [] (-> show-paths wrap-json-response))
 
   (POST "/verify" [] (-> verify wrap-json-response))
 
