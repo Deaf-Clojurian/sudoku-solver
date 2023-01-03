@@ -1,6 +1,7 @@
 (ns sudoku-solver.core
   (:require
    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [sudoku-solver.adapters.solver :as adapters.solver]
    [sudoku-solver.controllers.solver :as controllers.solver]
    [sudoku-solver.controllers.verifiers :as controllers.verifiers]
    [sudoku-solver.diplomat.http-server :as diplomat.http-server])
@@ -93,16 +94,27 @@
      [nil 8 nil nil 3 nil nil 2 nil]
      [nil nil 5 nil nil 8 9 nil nil]])
 
-(def sudoku-matrix-input-expert-level
-  [[nil nil 3 8 nil nil nil 9 7]
-   [6 nil nil nil nil 3 8 nil 1]
-   [2 nil nil nil nil nil 5 nil nil]
-   [9 1 nil nil nil nil 6 7 nil]
-   [3 7 nil nil 9 nil nil nil nil]
-   [nil nil nil nil nil nil 1 nil nil]
-   [nil nil nil 1 nil nil nil nil 2]
-   [nil nil nil 6 5 9 nil nil nil]
-   [nil nil nil nil 8 nil nil 5 nil]])
+#_(def sudoku-matrix-input-expert-level
+    [[nil nil 3 8 nil nil nil 9 7]
+     [6 nil nil nil nil 3 8 nil 1]
+     [2 nil nil nil nil nil 5 nil nil]
+     [9 1 nil nil nil nil 6 7 nil]
+     [3 7 nil nil 9 nil nil nil nil]
+     [nil nil nil nil nil nil 1 nil nil]
+     [nil nil nil 1 nil nil nil nil 2]
+     [nil nil nil 6 5 9 nil nil nil]
+     [nil nil nil nil 8 nil nil 5 nil]])
+
+(def sudoku-matrix-input-expert-level-2
+  [[nil nil nil 6 nil nil 2 1 nil]
+   [nil nil 8 nil nil nil nil 6 nil]
+   [nil 7 nil nil nil nil nil nil nil]
+   [9 nil nil nil 6 nil 4 nil nil]
+   [nil nil 1 nil nil nil nil nil 9]
+   [nil 2 nil nil nil 4 nil nil nil]
+   [nil 5 nil nil 3 7 nil 8 nil]
+   [nil nil nil nil 9 8 nil 7 1]
+   [nil nil 9 nil nil nil nil nil nil]])
 
 #_(def sudoku-matrix-input-easy-level
     [[1 4 2 nil 9 7 nil 6 3]
@@ -163,7 +175,8 @@
   "Use it to run through 'lein run <arg>'"
   [& args]
   (case (keyword (first args))
-    :solver (prn (controllers.solver/fill! sudoku-matrix-input-expert-level))
+    :solver (prn (controllers.solver/fill! sudoku-matrix-input-expert-level-2))
+    :solver-pretty (println (adapters.solver/->prettified (controllers.solver/fill! sudoku-matrix-input-expert-level-2)))
     :verifier (prn (controllers.verifiers/check plain-json-correct))
     (prn "Unknown option")))
 

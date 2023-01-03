@@ -37,6 +37,55 @@
                   (logic.solver/crude-invert-fill (common-values-by-three-laws! quadrant quadrant-pos))
                   value)})
 
+(s/defn frequent-in-one-law?! :- s/Bool
+  "This function returns true if the number appeared more than once in a direction (horizontal, vertical or quadrant).
+   If just once, will return false. The 'once' is when the reference is collided of one position, then false, and others,
+   remains false. If just one true, it invalidates and is considered as 'frequent'"
+  [unique-number :- s/Int
+   quadrant :- s/Keyword
+   quadrant-pos :- s/Keyword
+   one-law-direction :- (s/pred map?)]
+  (let [debug (for [{matrix-ref :matrix value-ref :value} one-law-direction]
+                (if (and (= matrix-ref quadrant)
+                         (= value-ref quadrant-pos))
+                  false
+                  (let [retrieved-val (retrieve-val! matrix-ref value-ref)]
+                    (if (set? retrieved-val)
+                      (contains? retrieved-val unique-number)
+                      (= retrieved-val unique-number)))))]
+    (reduce #(or %1 %2) debug)))
+
+(s/defn at-least-one-law-unique?! :- s/Bool
+  "This functions checks if at least once by one of direction - horizontal line, vertical line or quadrant - the number
+   appeared just once - inside a set or the number itself"
+  [unique-number :- s/Int
+   quadrant :- s/Keyword
+   quadrant-pos :- s/Keyword
+   set-of-values :- (s/pred set?)]
+  (and (contains? set-of-values unique-number)
+       (not (reduce #(and %1 %2) (map #(frequent-in-one-law?! unique-number quadrant quadrant-pos %) (logic.solver/gather-references-from-pos quadrant quadrant-pos))))))
+
+(s/defn replace-if-unique! :- s/Any
+  "It will replace if in one of law the number appeared just once, then it's considered
+   the response for this specified position, filling, else, just forwards, keeping"
+  [quadrant :- s/Keyword
+   quadrant-pos :- s/Keyword
+   set-of-values :- (s/pred set?)]
+  (if-let [promoted-number (first (for [unique-number (range 1 10)
+                                        :when (at-least-one-law-unique?! unique-number quadrant quadrant-pos set-of-values)]
+                                    unique-number))]
+    promoted-number
+    set-of-values))
+
+(s/defn ^:private inject-one-occurrence-value!
+  "It will check if the value is nil, then make calculation and fill the set, else
+   just forward value, keeping"
+  [quadrant :- s/Keyword
+   [quadrant-pos value] :- '(s/Keyword s/Any)]
+  {quadrant-pos (if (set? value)
+                  (replace-if-unique! quadrant quadrant-pos value)
+                  value)})
+
 (s/defn ^:private inject-nil-on-sets
   "It will check if the value is a set, then replace it to nil, else
    just forward value, keeping"
@@ -100,18 +149,6 @@
   (swap! sudoku-ref (fn [sudoku-matrix]
                       (mapv (fn [{:keys [quadrant values]}]
                               {:quadrant quadrant :values (into {} (map #(inject-nil-on-sets %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
-#_(s/defn replace-unique!? :- s/Bool
-    [quadrant :- s/Keyword
-     quadrant-pos :- s/Keyword
-     value :- (s/pred set?)
-     {matrix-quadrant :matrix value-pos :value} :- (s/pred map?)]
-    (or (and (= quadrant-pos value-pos)
-             (= quadrant matrix-quadrant))
-        (let [retrieved-val (retrieve-val! matrix-quadrant value-pos)
-              _ (clojure.pprint/pprint {:value value :retrieved retrieved-val})]
-          (if (set? retrieved-val)
-            (not= retrieved-val value)
-            (not (contains? value retrieved-val))))))
 
 #_(s/defn find-and-remove
     [sudoku-ref :- models.solver/MatrixSolving
@@ -145,6 +182,30 @@
                       (mapv (fn [{:keys [quadrant values]}]
                               {:quadrant quadrant :values (into {} (map #(replace-set-to-content! %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
 
+(s/defn replace-one-occurrence-to-its-content!
+  "Given a setup of set of candidate numbers, we may notice that there is only one occurrence
+   regarding at least of one of three sudoku laws, it will bring to front and become as a solution
+   number. Example:
+
+  ----------------------
+  |     1    4  [3, 5] |
+  |     5    6    9    |
+  |     2    7    8    |
+  ----------------------
+
+  the three is unique result, regarding for quadrant law, so:
+
+  ----------------------
+  |     1    4    3    |
+  |     5    6    9    |
+  |     2    7    8    |
+  ----------------------"
+  []
+  (swap! sudoku-ref (fn [sudoku-matrix]
+                      (mapv (fn [{:keys [quadrant values]}]
+                              (let [replenish-one-occurrence-values (into {} (map #(inject-one-occurrence-value! quadrant %) (partition 2 (logic.solver/map->vec values))))]
+                                {:quadrant quadrant :values replenish-one-occurrence-values})) sudoku-matrix))))
+
 #_(s/defn remove-val-from-cell-sets!
     [at-least-number :- s/Int
      quadrant :- s/Keyword
@@ -161,11 +222,18 @@
            {:quadrant quadrant :values (into {} (map #(override-unique! quadrant %) (partition 2 (map->vec values))))})
          sudoku-matrix))
 
+(defmacro play
+  "Play filling with sets, calculate, invalidating sets"
+  [fn]
+  `(do
+     (replace-nils-with-set-of-candidate-values!)
+     (~fn)
+     (invalidate-sets-with-nils)))
+
 (s/defn replenish-with-remained-spots! []
   (let [initial-state-sudoku @sudoku-ref]
-    (replace-nils-with-set-of-candidate-values!)
-    (replace-one-sized-sets-to-its-content!)
-    (invalidate-sets-with-nils)
+    (play replace-one-sized-sets-to-its-content!)
+    (play replace-one-occurrence-to-its-content!)
     (when (not= initial-state-sudoku @sudoku-ref)
       (recur))))
 
