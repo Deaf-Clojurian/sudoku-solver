@@ -9,6 +9,7 @@
                  [ring/ring-core "1.9.6"]
                  [ring/ring-defaults "0.3.4"]
                  [ring/ring-json "0.5.1"]
+                 [ring/ring-mock "0.4.0"]
                  [ring/ring-jetty-adapter "1.9.6"]
                  [org.clojure/data.json "2.4.0"]
                  [compojure "1.7.0"]]
@@ -26,4 +27,5 @@
             "lint-fix" ["do" ["clean-ns-fix"] ["format-fix"]]}     ;; Fix both
   :main ^:skip-aot sudoku-solver.core
   :target-path "target/%s"
+  :test-paths ["test" "test-integration"]
   :profiles {:uberjar {:aot :all}})
