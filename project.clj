@@ -21,7 +21,6 @@
             "format" ["clojure-lsp" "format" "--dry"]              ;; check if namespaces are formatted
             "diagnostics" ["clojure-lsp" "diagnostics"]            ;; check if project has any diagnostics (clj-kondo findings)
             "lint" ["do" ["clean-ns"] ["format"] ["diagnostics"]]  ;; check all above
-
             "clean-ns-fix" ["clojure-lsp" "clean-ns"]              ;; Fix namespaces not clean
             "format-fix" ["clojure-lsp" "format"]                  ;; Fix namespaces not formatted
             "lint-fix" ["do" ["clean-ns-fix"] ["format-fix"]]}     ;; Fix both
