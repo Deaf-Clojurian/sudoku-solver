@@ -1,10 +1,10 @@
 (ns sudoku-solver.core
   (:require
-    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-    [sudoku-solver.adapters.solver :as adapters.solver]
-    [sudoku-solver.controllers.solver :as controllers.solver]
-    [sudoku-solver.controllers.verifiers :as controllers.verifiers]
-    [sudoku-solver.diplomat.http-server :as diplomat.http-server])
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [sudoku-solver.adapters.solver :as adapters.solver]
+   [sudoku-solver.controllers.solver :as controllers.solver]
+   [sudoku-solver.controllers.verifiers :as controllers.verifiers]
+   [sudoku-solver.diplomat.http-server :as diplomat.http-server])
   (:gen-class))
 
 #_(def sudoku-matrix

@@ -1,13 +1,12 @@
 (ns sudoku-solver.controllers.solver
   (:require
-    [clojure.set :as set]
-    [schema.core :as s]
-    [sudoku-solver.adapters.solver :as adapters.solver]
-    [sudoku-solver.logic.solver :as logic.solver]
-    [sudoku-solver.models.solver :as models.solver]
-    [sudoku-solver.wire.in.solver :as wire.in.solver]
-    [sudoku-solver.wire.out.solver :as wire.out.solver])
-  (:import (clojure.lang Fn)))
+   [clojure.set :as set]
+   [schema.core :as s]
+   [sudoku-solver.adapters.solver :as adapters.solver]
+   [sudoku-solver.logic.solver :as logic.solver]
+   [sudoku-solver.models.solver :as models.solver]
+   [sudoku-solver.wire.in.solver :as wire.in.solver]
+   [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/def sudoku-ref (atom {}))
 
@@ -38,7 +37,6 @@
                   (logic.solver/crude-invert-fill (common-values-by-three-laws! quadrant quadrant-pos))
                   value)})
 
-
 (s/defn frequent-in-one-law?! :- s/Bool
   "This function returns true if the number appeared more than once in a direction (horizontal, vertical or quadrant).
    If just once, will return false. The 'once' is when the reference is collided of one position, then false, and others,
@@ -56,7 +54,6 @@
                       (contains? retrieved-val unique-number)
                       (= retrieved-val unique-number)))))]
     (reduce #(or %1 %2) debug)))
-
 
 (s/defn at-least-one-law-unique?! :- s/Bool
   "This functions checks if at least once by one of direction - horizontal line, vertical line or quadrant - the number
@@ -80,7 +77,6 @@
     promoted-number
     set-of-values))
 
-
 (s/defn ^:private inject-one-occurrence-value!
   "It will check if the value is nil, then make calculation and fill the set, else
    just forward value, keeping"
@@ -89,7 +85,6 @@
   {quadrant-pos (if (set? value)
                   (replace-if-unique! quadrant quadrant-pos value)
                   value)})
-
 
 (s/defn ^:private inject-nil-on-sets
   "It will check if the value is a set, then replace it to nil, else
@@ -187,7 +182,6 @@
                       (mapv (fn [{:keys [quadrant values]}]
                               {:quadrant quadrant :values (into {} (map #(replace-set-to-content! %) (partition 2 (logic.solver/map->vec values))))}) sudoku-matrix))))
 
-
 (s/defn replace-one-occurrence-to-its-content!
   "Given a setup of set of candidate numbers, we may notice that there is only one occurrence
    regarding at least of one of three sudoku laws, it will bring to front and become as a solution
@@ -235,7 +229,6 @@
      (replace-nils-with-set-of-candidate-values!)
      (~fn)
      (invalidate-sets-with-nils)))
-
 
 (s/defn replenish-with-remained-spots! []
   (let [initial-state-sudoku @sudoku-ref]
