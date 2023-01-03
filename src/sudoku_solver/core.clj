@@ -94,16 +94,16 @@
      [nil 8 nil nil 3 nil nil 2 nil]
      [nil nil 5 nil nil 8 9 nil nil]])
 
-(def sudoku-matrix-input-expert-level
-  [[nil nil 3 8 nil nil nil 9 7]
-   [6 nil nil nil nil 3 8 nil 1]
-   [2 nil nil nil nil nil 5 nil nil]
-   [9 1 nil nil nil nil 6 7 nil]
-   [3 7 nil nil 9 nil nil nil nil]
-   [nil nil nil nil nil nil 1 nil nil]
-   [nil nil nil 1 nil nil nil nil 2]
-   [nil nil nil 6 5 9 nil nil nil]
-   [nil nil nil nil 8 nil nil 5 nil]])
+#_(def sudoku-matrix-input-expert-level
+    [[nil nil 3 8 nil nil nil 9 7]
+     [6 nil nil nil nil 3 8 nil 1]
+     [2 nil nil nil nil nil 5 nil nil]
+     [9 1 nil nil nil nil 6 7 nil]
+     [3 7 nil nil 9 nil nil nil nil]
+     [nil nil nil nil nil nil 1 nil nil]
+     [nil nil nil 1 nil nil nil nil 2]
+     [nil nil nil 6 5 9 nil nil nil]
+     [nil nil nil nil 8 nil nil 5 nil]])
 
 (def sudoku-matrix-input-expert-level-2
   [[nil nil nil 6 nil nil 2 1 nil]
@@ -138,16 +138,16 @@
      [8 7 nil nil 6 nil nil 9 1]
      [1 9 4 5 7 3 8 nil 2]])
 
-(def sudoku-matrix-input-medium-level
-  [[7 nil nil nil nil 4 3 5 8]
-   [nil 4 nil nil 2 8 7 6 9]
-   [nil 9 8 nil nil nil nil nil 1]
-   [nil nil nil nil 7 2 nil nil nil]
-   [nil nil nil 9 6 nil 8 2 7]
-   [nil nil nil 4 8 nil 9 3 6]
-   [nil 8 nil 2 1 9 5 nil nil]
-   [nil nil 5 nil 4 7 1 nil 2]
-   [2 1 7 8 5 nil 6 nil nil]])
+#_(def sudoku-matrix-input-medium-level
+    [[7 nil nil nil nil 4 3 5 8]
+     [nil 4 nil nil 2 8 7 6 9]
+     [nil 9 8 nil nil nil nil nil 1]
+     [nil nil nil nil 7 2 nil nil nil]
+     [nil nil nil 9 6 nil 8 2 7]
+     [nil nil nil 4 8 nil 9 3 6]
+     [nil 8 nil 2 1 9 5 nil nil]
+     [nil nil 5 nil 4 7 1 nil 2]
+     [2 1 7 8 5 nil 6 nil nil]])
 
 #_(def sudoku-matrix-input-hard-level
     [[nil nil nil 1 nil 6 3 nil 8]

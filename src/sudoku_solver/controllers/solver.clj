@@ -223,8 +223,8 @@
          sudoku-matrix))
 
 (defmacro play
-  [fn]
   "Play filling with sets, calculate, invalidating sets"
+  [fn]
   `(do
      (replace-nils-with-set-of-candidate-values!)
      (~fn)
