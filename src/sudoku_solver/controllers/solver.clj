@@ -231,11 +231,15 @@
      (~fn)
      (invalidate-sets-with-nils)))
 
+(s/defn ^:private still-not-same-state? :- s/Bool
+  [initial-state-sudoku :- models.solver/MatrixSolving]
+  (not= initial-state-sudoku @sudoku-ref))
+
 (s/defn replenish-with-remained-spots! []
   (let [initial-state-sudoku @sudoku-ref]
     (play replace-one-sized-sets-to-its-content!)
     (play replace-one-occurrence-to-its-content!)
-    (when (not= initial-state-sudoku @sudoku-ref)
+    (when (still-not-same-state? initial-state-sudoku)
       (recur))))
 
 (s/defn solve!
