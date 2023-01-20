@@ -1,11 +1,9 @@
 (ns pretty
   (:require
    [clojure.test :refer [deftest is]]
-   [ring.mock.request :as mock]
    [fixture]
+   [ring.mock.request :as mock]
    [sudoku-solver.diplomat.http-server :as diplomat.http-server]))
-
-
 
 (deftest happy-way-test
   (let [request (-> (mock/request :post "/solve/pretty")

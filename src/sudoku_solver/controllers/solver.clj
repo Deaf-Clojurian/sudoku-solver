@@ -1,13 +1,13 @@
 (ns sudoku-solver.controllers.solver
   (:require
-    [clojure.set :as set]
-    [schema.core :as s]
-    [sudoku-solver.adapters.solver :as adapters.solver]
-    [sudoku-solver.logic.solver :as logic.solver]
-    [sudoku-solver.logic.verifier :as logic.verifier]
-    [sudoku-solver.models.solver :as models.solver]
-    [sudoku-solver.wire.in.solver :as wire.in.solver]
-    [sudoku-solver.wire.out.solver :as wire.out.solver]))
+   [clojure.set :as set]
+   [schema.core :as s]
+   [sudoku-solver.adapters.solver :as adapters.solver]
+   [sudoku-solver.logic.solver :as logic.solver]
+   [sudoku-solver.logic.verifier :as logic.verifier]
+   [sudoku-solver.models.solver :as models.solver]
+   [sudoku-solver.wire.in.solver :as wire.in.solver]
+   [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/def sudoku-ref (atom {}))
 

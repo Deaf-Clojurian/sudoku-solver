@@ -212,7 +212,7 @@
    [6 5 4 9 8 7 1 2 3]
    [9 8 7 3 2 1 4 5 6]])
 
-
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def lucky-try-input
   [[nil 9 nil nil 1 6 8 5 4]
    [8 nil 4 9 5 7 nil 2 6]
