@@ -231,7 +231,10 @@
      (~fn)
      (invalidate-sets-with-nils)))
 
-(s/defn ^:private still-not-same-state? :- s/Bool
+(s/defn ^:private still-delta-state? :- s/Bool
+  "During the process of the resolution 'receipt', if the previous state
+   is same after end of steps, it means or the solution is found, or it's
+   stuck with no exit by logic only"                        ; TODO: review comment after implement 'brute force' attempt
   [initial-state-sudoku :- models.solver/MatrixSolving]
   (not= initial-state-sudoku @sudoku-ref))
 
@@ -239,7 +242,7 @@
   (let [initial-state-sudoku @sudoku-ref]
     (play replace-one-sized-sets-to-its-content!)
     (play replace-one-occurrence-to-its-content!)
-    (when (still-not-same-state? initial-state-sudoku)
+    (when (still-delta-state? initial-state-sudoku)
       (recur))))
 
 (s/defn solve!

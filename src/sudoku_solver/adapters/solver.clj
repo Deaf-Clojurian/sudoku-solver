@@ -1,11 +1,11 @@
 (ns sudoku-solver.adapters.solver
   (:require
-   [clojure.string :as string]
-   [schema.core :as s]
-   [sudoku-solver.logic.solver :as logic.solver]
-   [sudoku-solver.models.solver :as models.solver]
-   [sudoku-solver.wire.in.solver :as wire.in.solver]
-   [sudoku-solver.wire.out.solver :as wire.out.solver]))
+    [clojure.string :as string]
+    [schema.core :as s]
+    [sudoku-solver.logic.solver :as logic.solver]
+    [sudoku-solver.models.solver :as models.solver]
+    [sudoku-solver.wire.in.solver :as wire.in.solver]
+    [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/defn derange-3 :- s/Int
   [pos :- s/Int
@@ -21,8 +21,8 @@
   [quadrant :- s/Keyword
    input :- wire.in.solver/MatrixInput]
   (let [[y x] (as-> (name quadrant) $
-                (string/split $ #"")
-                (map #(Integer/parseInt %) $))]
+                    (string/split $ #"")
+                    (map #(Integer/parseInt %) $))]
 
     (into {}
           (for [posY (range-3 y)
@@ -33,37 +33,30 @@
   "Adapts to an internal model to then work over this to (try) to find result"
   [input :- wire.in.solver/MatrixInput]
   (vec
-   (flatten
-    (for [qx (range-3 0)
-          qy (range-3 0)
-          :let [q (keyword (str qy qx))]]
-      {:quadrant q
-       :values   (get-values q input)}))))
+    (flatten
+      (for [qx (range-3 0)
+            qy (range-3 0)
+            :let [q (keyword (str qy qx))]]
+        {:quadrant q
+         :values   (get-values q input)}))))
 
 (s/defn ->singularity :- wire.out.solver/MatrixResult
   "It adapts back to the vec way to show result"
   [matrix :- models.solver/MatrixSolving]
-  #_(vec
-     (partition 3 (for [qx (range-3 0)
-                        qy (range-3 0)
-                        :let [q (keyword (str qx qy))]]
-                    q)))                                   ;TODO: logic it!
-
-  [[(-> matrix (nth 0) :values :00) (-> matrix (nth 0) :values :01) (-> matrix (nth 0) :values :02) (-> matrix (nth 3) :values :00) (-> matrix (nth 3) :values :01) (-> matrix (nth 3) :values :02) (-> matrix (nth 6) :values :00) (-> matrix (nth 6) :values :01) (-> matrix (nth 6) :values :02)]
-   [(-> matrix (nth 0) :values :10) (-> matrix (nth 0) :values :11) (-> matrix (nth 0) :values :12) (-> matrix (nth 3) :values :10) (-> matrix (nth 3) :values :11) (-> matrix (nth 3) :values :12) (-> matrix (nth 6) :values :10) (-> matrix (nth 6) :values :11) (-> matrix (nth 6) :values :12)]
-   [(-> matrix (nth 0) :values :20) (-> matrix (nth 0) :values :21) (-> matrix (nth 0) :values :22) (-> matrix (nth 3) :values :20) (-> matrix (nth 3) :values :21) (-> matrix (nth 3) :values :22) (-> matrix (nth 6) :values :20) (-> matrix (nth 6) :values :21) (-> matrix (nth 6) :values :22)]
-   [(-> matrix (nth 1) :values :00) (-> matrix (nth 1) :values :01) (-> matrix (nth 1) :values :02) (-> matrix (nth 4) :values :00) (-> matrix (nth 4) :values :01) (-> matrix (nth 4) :values :02) (-> matrix (nth 7) :values :00) (-> matrix (nth 7) :values :01) (-> matrix (nth 7) :values :02)]
-   [(-> matrix (nth 1) :values :10) (-> matrix (nth 1) :values :11) (-> matrix (nth 1) :values :12) (-> matrix (nth 4) :values :10) (-> matrix (nth 4) :values :11) (-> matrix (nth 4) :values :12) (-> matrix (nth 7) :values :10) (-> matrix (nth 7) :values :11) (-> matrix (nth 7) :values :12)]
-   [(-> matrix (nth 1) :values :20) (-> matrix (nth 1) :values :21) (-> matrix (nth 1) :values :22) (-> matrix (nth 4) :values :20) (-> matrix (nth 4) :values :21) (-> matrix (nth 4) :values :22) (-> matrix (nth 7) :values :20) (-> matrix (nth 7) :values :21) (-> matrix (nth 7) :values :22)]
-   [(-> matrix (nth 2) :values :00) (-> matrix (nth 2) :values :01) (-> matrix (nth 2) :values :02) (-> matrix (nth 5) :values :00) (-> matrix (nth 5) :values :01) (-> matrix (nth 5) :values :02) (-> matrix (nth 8) :values :00) (-> matrix (nth 8) :values :01) (-> matrix (nth 8) :values :02)]
-   [(-> matrix (nth 2) :values :10) (-> matrix (nth 2) :values :11) (-> matrix (nth 2) :values :12) (-> matrix (nth 5) :values :10) (-> matrix (nth 5) :values :11) (-> matrix (nth 5) :values :12) (-> matrix (nth 8) :values :10) (-> matrix (nth 8) :values :11) (-> matrix (nth 8) :values :12)]
-   [(-> matrix (nth 2) :values :20) (-> matrix (nth 2) :values :21) (-> matrix (nth 2) :values :22) (-> matrix (nth 5) :values :20) (-> matrix (nth 5) :values :21) (-> matrix (nth 5) :values :22) (-> matrix (nth 8) :values :20) (-> matrix (nth 8) :values :21) (-> matrix (nth 8) :values :22)]])
+  (vec
+    (for [posX (range 3)
+          posY (range 3)]
+      (vec
+        (flatten
+          (for [offsetX (map #(* % 3) (range 3))
+                offsetY (range 3)]
+            (-> matrix (nth (+ posX offsetX)) :values (get (keyword (str posY offsetY))))))))))
 
 (s/defn ->prettified :- s/Str
   [matrix-result :- wire.out.solver/MatrixResult]
   (str
-   "-------------------------
-| " (logic.solver/pick-value matrix-result 0 0) " " (logic.solver/pick-value matrix-result 0 1) " " (logic.solver/pick-value matrix-result 0 2) " | " (logic.solver/pick-value matrix-result 0 3) " " (logic.solver/pick-value matrix-result 0 4) " " (logic.solver/pick-value matrix-result 0 5) " | " (logic.solver/pick-value matrix-result 0 6) " " (logic.solver/pick-value matrix-result 0 7) " " (logic.solver/pick-value matrix-result 0 8) " |
+    "-------------------------
+ | " (logic.solver/pick-value matrix-result 0 0) " " (logic.solver/pick-value matrix-result 0 1) " " (logic.solver/pick-value matrix-result 0 2) " | " (logic.solver/pick-value matrix-result 0 3) " " (logic.solver/pick-value matrix-result 0 4) " " (logic.solver/pick-value matrix-result 0 5) " | " (logic.solver/pick-value matrix-result 0 6) " " (logic.solver/pick-value matrix-result 0 7) " " (logic.solver/pick-value matrix-result 0 8) " |
 | " (logic.solver/pick-value matrix-result 1 0) " " (logic.solver/pick-value matrix-result 1 1) " " (logic.solver/pick-value matrix-result 1 2) " | " (logic.solver/pick-value matrix-result 1 3) " " (logic.solver/pick-value matrix-result 1 4) " " (logic.solver/pick-value matrix-result 1 5) " | " (logic.solver/pick-value matrix-result 1 6) " " (logic.solver/pick-value matrix-result 1 7) " " (logic.solver/pick-value matrix-result 1 8) " |
 | " (logic.solver/pick-value matrix-result 2 0) " " (logic.solver/pick-value matrix-result 2 1) " " (logic.solver/pick-value matrix-result 2 2) " | " (logic.solver/pick-value matrix-result 2 3) " " (logic.solver/pick-value matrix-result 2 4) " " (logic.solver/pick-value matrix-result 2 5) " | " (logic.solver/pick-value matrix-result 2 6) " " (logic.solver/pick-value matrix-result 2 7) " " (logic.solver/pick-value matrix-result 2 8) " |
 -------------------------

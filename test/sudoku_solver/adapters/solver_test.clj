@@ -31,3 +31,15 @@
                  {:quadrant :22 :values {:00 3 :01 7 :02 nil :10 nil :11 2 :12 nil :20 9 :21 nil :22 nil}}]
                 (adapters.solver/->matrix fixture.input/incoming-input)))))
 
+(deftest ->singularity-test
+  (testing "Adapt to single output"
+    (is (match? [[2 1 9 4 3 2 3 2 1]
+                 [5 4 3 7 6 5 6 5 4]
+                 [8 7 6 1 9 8 9 8 7]
+                 [5 4 3 7 6 5 6 5 4]
+                 [8 7 6 1 9 8 9 8 7]
+                 [2 1 9 4 3 2 3 2 1]
+                 [6 7 8 8 9 1 7 8 9]
+                 [9 1 2 2 3 4 1 2 3]
+                 [3 4 5 5 6 7 4 5 6]]
+                (adapters.solver/->singularity fixture.input/sudoku-matrix-completed)))))
