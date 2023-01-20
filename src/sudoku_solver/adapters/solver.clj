@@ -44,13 +44,13 @@
   "It adapts back to the vec way to show result"
   [matrix :- models.solver/MatrixSolving]
   (vec
-    (for [posX (range 3)
-          posY (range 3)]
-      (vec
-        (flatten
-          (for [offsetX (map #(* % 3) (range 3))
-                offsetY (range 3)]
-            (-> matrix (nth (+ posX offsetX)) :values (get (keyword (str posY offsetY))))))))))
+   (for [posX (range 3)
+         posY (range 3)]
+     (vec
+      (flatten
+       (for [offsetX (map #(* % 3) (range 3))
+             offsetY (range 3)]
+         (-> matrix (nth (+ posX offsetX)) :values (get (keyword (str posY offsetY))))))))))
 
 (s/defn ->prettified :- s/Str
   [matrix-result :- wire.out.solver/MatrixResult]

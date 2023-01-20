@@ -31,7 +31,6 @@
                  {:quadrant :22 :values {:00 3 :01 7 :02 nil :10 nil :11 2 :12 nil :20 9 :21 nil :22 nil}}]
                 (adapters.solver/->matrix fixture.input/incoming-input)))))
 
-
 (deftest ->singularity-test
   (testing "Adapt to single output"
     (is (match? [[2 1 9 4 3 2 3 2 1]
