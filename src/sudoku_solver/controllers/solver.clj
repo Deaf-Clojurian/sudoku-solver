@@ -4,6 +4,7 @@
    [schema.core :as s]
    [sudoku-solver.adapters.solver :as adapters.solver]
    [sudoku-solver.logic.solver :as logic.solver]
+   [sudoku-solver.logic.verifier :as logic.verifier]
    [sudoku-solver.models.solver :as models.solver]
    [sudoku-solver.wire.in.solver :as wire.in.solver]
    [sudoku-solver.wire.out.solver :as wire.out.solver]))
@@ -230,18 +231,28 @@
      (~fn)
      (invalidate-sets-with-nils)))
 
+(s/defn ^:private still-delta-state? :- s/Bool
+  "During the process of the resolution 'receipt', if the previous state
+   is same after end of steps, it means or the solution is found, or it's
+   stuck with no exit by logic only"                        ; TODO: review comment after implement 'brute force' attempt
+  [initial-state-sudoku :- models.solver/MatrixSolving]
+  (not= initial-state-sudoku @sudoku-ref))
+
 (s/defn replenish-with-remained-spots! []
   (let [initial-state-sudoku @sudoku-ref]
     (play replace-one-sized-sets-to-its-content!)
     (play replace-one-occurrence-to-its-content!)
-    (when (not= initial-state-sudoku @sudoku-ref)
+    (when (still-delta-state? initial-state-sudoku)
       (recur))))
 
 (s/defn solve!
   [sudoku-matrix :- models.solver/MatrixSolving]
   (reset! sudoku-ref sudoku-matrix)
   (replenish-with-remained-spots!)
-  @sudoku-ref)
+  (let [sudoku-result @sudoku-ref]
+    (if (logic.verifier/correct-solution? sudoku-result)
+      sudoku-result
+      (throw (ex-info "Invalid Sudoku Starting Values" {:error "Invalid Sudoku"})))))
 
 (s/defn fill! :- wire.out.solver/MatrixResult
   "This function 'attempts' to solve the sudoku"
