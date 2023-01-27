@@ -1,6 +1,6 @@
 [![CI/CD](https://github.com/Deaf-Clojurian/sudoku-solver/actions/workflows/cicd.yml/badge.svg)](https://github.com/Deaf-Clojurian/sudoku-solver/actions/workflows/cicd.yml)
 # Sudoku Solver
-### (or should Sudoku Spoiler... hmmm... :thinking:)
+### (or should be "Sudoku Spoiler"... hmmm... :thinking:)
 
 Hard to solve some mind tricking Sudokus? Or just want to challenge if a bot can solve this well? Or want to cheat your friend in a head-to-head game? Just feed me with a Sudoku challenge!
 
