@@ -12,6 +12,7 @@ Hard to solve some mind tricking Sudokus? Or just want to challenge if a bot can
 - Namespaces
 - RING for RESTful
 - Leiningen
+- Stateful through atom
 
 ## Usage
 
