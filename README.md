@@ -30,7 +30,7 @@ To run locally:
 |   4 6 |       | 7 9 8 |
 -------------------------
 ```
-Should be converted into a vector of line vectors in JSON (I'll work with different possibles inputs):
+Should be converted into a vector of line vectors in JSON (I'll work with different possible inputs):
 ```json
 [[ 6,     2,    null,  1,    null,  null,  null,  8,    7  ],
  [ 4,    null,   5,   null,  null,  null,  null, null,  9  ],
