@@ -6,6 +6,12 @@ Hard to solve some mind tricking Sudokus? Or just want to challenge if a bot can
 
 ![](https://media.giphy.com/media/l41Yy6jvn3BXYDRu0/giphy.gif)
 
+## ![clojure](https://user-images.githubusercontent.com/26586714/215013658-47a84870-4675-4bb7-82c9-996e8337addb.png) Clojure
+- Hexagonal Architecture
+- Macros
+- Namespaces
+- RING for RESTful
+- Leiningen
 
 ## Usage
 
