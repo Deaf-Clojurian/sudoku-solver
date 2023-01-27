@@ -44,6 +44,17 @@ Should be converted into a vector of line vectors in JSON (I'll work with differ
 ```
 - And tadaaaa! The resolution (or the "spoiler" :see_no_evil:)
 
+## Next steps:
+- [x] Unit tests
+- [x] Integration tests
+- [x] Run with a local server
+- [x] Prettify resolutions
+- [ ] Different inputs
+- [ ] Run as cli
+- [ ] Solve expert level
+- [ ] Generate new Sudoku challenges
+- [ ] Create a frontend (using a Clojurescript framework or React with reagent)
+- [ ] Get fund to buy a domain and make it available in a server - [vakinha](https://www.vakinha.com.br/3428676)
 
 ## License
 
