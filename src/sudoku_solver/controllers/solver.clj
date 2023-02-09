@@ -243,6 +243,13 @@
   (replenish-with-remained-spots!)
   @sudoku-ref)
 
+
+(s/defn populate-with-candidate-values!
+  [sudoku-matrix :- models.solver/MatrixSolving]
+  (reset! sudoku-ref sudoku-matrix)
+  (replace-nils-with-set-of-candidate-values!)
+  @sudoku-ref)
+
 (s/defn fill! :- wire.out.solver/MatrixResult
   "This function 'attempts' to solve the sudoku"
   [input :- wire.in.solver/MatrixInput]
@@ -250,3 +257,10 @@
        adapters.solver/->matrix
        solve!
        adapters.solver/->singularity))
+
+(s/defn fill-candidate-values! :- wire.out.solver/MatrixResult
+  "Return candidate values only, without trying to solve"
+  [input :- wire.in.solver/MatrixInput]
+  (->> input
+       adapters.solver/->matrix
+       populate-with-candidate-values!))
