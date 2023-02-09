@@ -100,7 +100,7 @@
   [[quadrant-pos value] :- '(s/Keyword s/Any)]
   {quadrant-pos (if (and (set? value) (= 1 (count value))) (first value) value)})
 
-(s/defn ^:private replace-nils-with-set-of-candidate-values!
+(s/defn replace-nils-with-set-of-candidate-values!
   "It will fill replacing all nil values into a vector of 1 to 9 values,
    but according to whole game start sudoku that should make sense, with possible
    values to solve.
