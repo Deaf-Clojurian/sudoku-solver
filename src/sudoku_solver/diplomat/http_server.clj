@@ -40,7 +40,16 @@
   (response
    {:sudoku-solver {:routes ["verify"
                              "solve"
-                             "solve/pretty"]}}))
+                             "solve/pretty"
+                             "pencil"]}}))
+
+(defn pencil
+  [{:keys [body]}]
+  (response
+   (json/write-str (-> body
+                       slurp
+                       json/read-str
+                       controllers.solver/fill-candidate-values!))))
 
 (defroutes app-routes
   (GET "/" [] (-> show-paths wrap-json-response))
@@ -50,5 +59,7 @@
   (POST "/solve" [] (-> solve wrap-json-response))
 
   (POST "/solve/pretty" [] (-> solve-pretty))
+
+  (POST "/pencil" [] (-> pencil))
 
   (route/not-found "{\"error\" : \"Not Found\"}"))

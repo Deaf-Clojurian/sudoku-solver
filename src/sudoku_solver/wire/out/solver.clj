@@ -3,4 +3,4 @@
    [schema.core :as s]
    [sudoku-solver.wire.common :as wire.common]))
 
-(s/defschema MatrixResult wire.common/skeleton-io)
+(s/defschema MatrixResult wire.common/skeleton-universal-io)

@@ -19,3 +19,7 @@
 
 (def skeleton-io
   [[(s/maybe s/Int)]])
+
+(def skeleton-universal-io
+  [[(s/conditional set? [s/Int]
+                   :else (s/maybe s/Int))]])
