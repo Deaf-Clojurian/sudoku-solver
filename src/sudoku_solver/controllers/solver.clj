@@ -243,7 +243,6 @@
   (replenish-with-remained-spots!)
   @sudoku-ref)
 
-
 (s/defn populate-with-candidate-values!
   [sudoku-matrix :- models.solver/MatrixSolving]
   (reset! sudoku-ref sudoku-matrix)
@@ -263,4 +262,5 @@
   [input :- wire.in.solver/MatrixInput]
   (->> input
        adapters.solver/->matrix
-       populate-with-candidate-values!))
+       populate-with-candidate-values!
+       adapters.solver/->singularity))

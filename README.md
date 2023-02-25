@@ -56,12 +56,14 @@ Should be converted into a vector of line vectors in JSON (I'll work with differ
 - [x] Integration tests
 - [x] Run with a local server
 - [x] Prettify resolutions
+- [x] Return candidate values
 - [ ] Different inputs
 - [ ] Run as cli
 - [ ] Solve expert level
-- [ ] Generate new Sudoku challenges
+- [ ] Generate new Sudoku challenges (Machine Learning...)
 - [ ] Create a frontend (using a Clojurescript framework or React with reagent)
-- [ ] Get fund to buy a domain and make it available in a server - [vakinha](https://www.vakinha.com.br/3428676)
+
+See [Changelog](CHANGELOG.md) for more details
 
 ## License
 
