@@ -222,3 +222,14 @@
    [[2 3 1] [5 7 9] [8 6 4]]
    [[9 4 7] [6 1 8] [5 2 3]]
    [[8 5 6] [2 4 3] [1 7 9]]])
+
+(def positioned-input-new-game
+  [[[nil nil 5] [8 1 6] [7 nil nil]]
+   [[nil nil nil] [nil 4 7] [nil 6 5]]
+   [[7 nil nil] [nil 2 nil] [nil nil 1]]
+   [[6 5 1] [4 7 nil] [nil nil 2]]
+   [[8 2 9] [nil 3 nil] [6 7 4]]
+   [[nil nil 3] [9 6 nil] [nil nil nil]]
+   [[3 8 nil] [nil nil nil] [nil nil nil]]
+   [[nil 4 2] [nil 9 3] [8 5 nil]]
+   [[nil 9 7] [6 8 1] [4 nil nil]]])

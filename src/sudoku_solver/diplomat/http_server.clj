@@ -21,10 +21,18 @@
 (defn solve
   [{:keys [body]}]
   (response
-   (json/write-str (-> body
-                       slurp
-                       json/read-str
-                       controllers.solver/fill!))))
+    (json/write-str (-> body
+                        slurp
+                        json/read-str
+                        controllers.solver/fill!))))
+
+(defn solve-positioned
+  [{:keys [body]}]
+  (response
+    (json/write-str (-> body
+                        slurp
+                        json/read-str
+                        controllers.solver/fill-positioned!))))
 
 (defn solve-pretty
   [{:keys [body]}]
@@ -35,12 +43,26 @@
        controllers.solver/fill!
        adapters.solver/->prettified)))
 
+
+(defn solve-positioned-pretty
+  [{:keys [body]}]
+  (response
+    (json/write-str (-> body
+                        slurp
+                        json/read-str
+                        controllers.solver/fill-positioned!
+                        adapters.solver/->prettified))))
+
+
+
 (defn show-paths
   [_]
   (response
    {:sudoku-solver {:routes ["verify"
                              "solve"
+                             "solve/positioned"
                              "solve/pretty"
+                             "solve/positioned/pretty"
                              "pencil"]}}))
 
 (defn pencil
@@ -56,7 +78,11 @@
 
   (POST "/verify" [] (-> verify wrap-json-response))
 
-  (POST "/solve" [] (-> solve wrap-json-response))
+           (POST "/solve" [] (-> solve wrap-json-response))
+
+           (POST "/solve/positioned" [] (-> solve-positioned wrap-json-response))
+
+           (POST "/solve/positioned/pretty" [] (-> solve-positioned-pretty wrap-json-response))
 
   (POST "/solve/pretty" [] (-> solve-pretty))
 

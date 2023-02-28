@@ -16,5 +16,16 @@
                  [2 3 1 9 4 7 8 5 6]
                  [5 7 9 6 1 8 2 4 3]
                  [8 6 4 5 2 3 1 7 9]]
-                (adapters.input/positioned-vector->wire fixture.input/positioned-input)))))
+                (adapters.input/positioned-vector->wire fixture.input/positioned-input))))
 
+  (testing "Adapt positioned input to standard input - starting a game"
+    (is (match? [[nil nil 5 nil nil nil 7 nil nil]
+                 [8 1 6 nil 4 7 nil 2 nil]
+                 [7 nil nil nil 6 5 nil nil 1]
+                 [6 5 1 8 2 9 nil nil 3]
+                 [4 7 nil nil 3 nil 9 6 nil]
+                 [nil nil 2 6 7 4 nil nil nil]
+                 [3 8 nil nil 4 2 nil 9 7]
+                 [nil nil nil nil 9 3 6 8 1]
+                 [nil nil nil 8 5 nil 4 nil nil]]
+                (adapters.input/positioned-vector->wire fixture.input/positioned-input-new-game)))))
