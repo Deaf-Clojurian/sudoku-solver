@@ -17,4 +17,4 @@
                  [5 7 9 6 1 8 2 4 3]
                  [8 6 4 5 2 3 1 7 9]]
                 (adapters.input/positioned-vector->wire fixture.input/positioned-input)))))
-  
+
