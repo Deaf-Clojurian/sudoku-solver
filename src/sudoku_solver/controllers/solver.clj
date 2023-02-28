@@ -1,12 +1,13 @@
 (ns sudoku-solver.controllers.solver
   (:require
-   [clojure.set :as set]
-   [schema.core :as s]
-   [sudoku-solver.adapters.solver :as adapters.solver]
-   [sudoku-solver.logic.solver :as logic.solver]
-   [sudoku-solver.models.solver :as models.solver]
-   [sudoku-solver.wire.in.solver :as wire.in.solver]
-   [sudoku-solver.wire.out.solver :as wire.out.solver]))
+    [clojure.set :as set]
+    [schema.core :as s]
+    [sudoku-solver.adapters.input :as adapters.input]
+    [sudoku-solver.adapters.solver :as adapters.solver]
+    [sudoku-solver.logic.solver :as logic.solver]
+    [sudoku-solver.models.solver :as models.solver]
+    [sudoku-solver.wire.in.solver :as wire.in.solver]
+    [sudoku-solver.wire.out.solver :as wire.out.solver]))
 
 (s/def sudoku-ref (atom {}))
 
@@ -100,7 +101,7 @@
   [[quadrant-pos value] :- '(s/Keyword s/Any)]
   {quadrant-pos (if (and (set? value) (= 1 (count value))) (first value) value)})
 
-(s/defn ^:private replace-nils-with-set-of-candidate-values!
+(s/defn replace-nils-with-set-of-candidate-values!
   "It will fill replacing all nil values into a vector of 1 to 9 values,
    but according to whole game start sudoku that should make sense, with possible
    values to solve.
@@ -206,21 +207,26 @@
                               (let [replenish-one-occurrence-values (into {} (map #(inject-one-occurrence-value! quadrant %) (partition 2 (logic.solver/map->vec values))))]
                                 {:quadrant quadrant :values replenish-one-occurrence-values})) sudoku-matrix))))
 
-#_(s/defn remove-val-from-cell-sets!
-    [at-least-number :- s/Int
-     quadrant :- s/Keyword
-     quadrant-pos :- s/Keyword]
-    (doseq [{:keys [matrix value]} (logic.solver/gather-references-from-pos quadrant quadrant-pos)]
-      (let [retrieved-val (retrieve-val! matrix value)]
-        (if (set? retrieved-val)
-          (swap! sudoku-ref #(logic.solver/find-and-replace % at-least-number quadrant quadrant-pos))))))
+(s/defn replace-solo-spot-deduction!
+  "It looks for spot that is alone, then fill by deduction, of course. Example:
+----------------------
+|     1    4   nil   |
+|     5    6    9    |
+|     2    7    8    |
+----------------------
 
-#_(s/defn uniqued :- models.solver/MatrixSolving
-    [sudoku-matrix :- models.solver/MatrixSolving]
-    (reset! sudoku-ref sudoku-matrix)
-    (map (fn [{:keys [quadrant values]}]
-           {:quadrant quadrant :values (into {} (map #(override-unique! quadrant %) (partition 2 (map->vec values))))})
-         sudoku-matrix))
+will become as:
+
+----------------------
+|     1    4    3    |
+|     5    6    9    |
+|     2    7    8    |
+----------------------"
+  []
+  (swap! sudoku-ref (fn [sudoku-matrix]
+                      (mapv (fn [{:keys [quadrant values]}]
+                              ;bla bla
+                              ) sudoku-matrix))))
 
 (defmacro play
   "Play filling with sets, calculate, invalidating sets"
@@ -230,17 +236,18 @@
      (~fn)
      (invalidate-sets-with-nils)))
 
-(s/defn replenish-with-remained-spots! []
+(s/defn mark-spots! []
   (let [initial-state-sudoku @sudoku-ref]
     (play replace-one-sized-sets-to-its-content!)
     (play replace-one-occurrence-to-its-content!)
+    #_(replace-solo-spot-deduction!)
     (when (not= initial-state-sudoku @sudoku-ref)
       (recur))))
 
 (s/defn solve!
   [sudoku-matrix :- models.solver/MatrixSolving]
   (reset! sudoku-ref sudoku-matrix)
-  (replenish-with-remained-spots!)
+  (mark-spots!)
   @sudoku-ref)
 
 (s/defn populate-with-candidate-values!
@@ -253,6 +260,15 @@
   "This function 'attempts' to solve the sudoku"
   [input :- wire.in.solver/MatrixInput]
   (->> input
+       adapters.solver/->matrix
+       solve!
+       adapters.solver/->singularity))
+
+(s/defn fill-positioned! :- wire.out.solver/MatrixResult
+  "This function 'attempts' to solve the sudoku - using positioned input"
+  [input :- wire.in.solver/MatrixInputPositioned]
+  (->> input
+       adapters.input/positioned-vector->wire
        adapters.solver/->matrix
        solve!
        adapters.solver/->singularity))

@@ -211,3 +211,25 @@
    [3 2 1 6 5 4 7 8 9]
    [6 5 4 9 8 7 1 2 3]
    [9 8 7 3 2 1 4 5 6]])
+
+(def positioned-input
+  [[[4 2 7] [9 8 5] [3 1 6]]
+   [[1 5 6] [7 3 2] [4 8 9]]
+   [[3 9 8] [6 1 4] [7 2 5]]
+   [[7 4 8] [1 5 2] [6 9 3]]
+   [[3 9 1] [8 6 4] [2 7 5]]
+   [[5 6 2] [9 3 7] [4 8 1]]
+   [[2 3 1] [5 7 9] [8 6 4]]
+   [[9 4 7] [6 1 8] [5 2 3]]
+   [[8 5 6] [2 4 3] [1 7 9]]])
+
+(def positioned-input-new-game
+  [[[nil nil 5] [8 1 6] [7 nil nil]]
+   [[nil nil nil] [nil 4 7] [nil 6 5]]
+   [[7 nil nil] [nil 2 nil] [nil nil 1]]
+   [[6 5 1] [4 7 nil] [nil nil 2]]
+   [[8 2 9] [nil 3 nil] [6 7 4]]
+   [[nil nil 3] [9 6 nil] [nil nil nil]]
+   [[3 8 nil] [nil nil nil] [nil nil nil]]
+   [[nil 4 2] [nil 9 3] [8 5 nil]]
+   [[nil 9 7] [6 8 1] [4 nil nil]]])
