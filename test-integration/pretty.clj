@@ -2,6 +2,7 @@
   (:require
    [clojure.test :refer [deftest is]]
    [ring.mock.request :as mock]
+   [sudoku-solver.adapters.convert :as adapters.convert]
    [sudoku-solver.diplomat.http-server :as diplomat.http-server]))
 
 (def prettyfied-response
@@ -30,6 +31,22 @@
                                      [2 nil 7 nil nil 9 nil 3 5]
                                      [5 nil nil nil nil nil 6 4 nil]
                                      [nil 4 6 nil nil nil 7 9 8]]))
+        response (diplomat.http-server/app-routes request)]
+    (is (= 200 (:status response)))
+    (is (= prettyfied-response (:body response)))))
+
+(deftest happy-way-linear-test
+  (let [request (-> (mock/request :post "/solve/linear/pretty")
+                    (mock/json-body (adapters.convert/standard->linear
+                                     [[6 2 nil 1 nil nil nil 8 7]
+                                      [4 nil 5 nil nil nil nil nil 9]
+                                      [7 9 nil nil 5 nil 3 1 nil]
+                                      [nil 6 nil nil nil 7 9 5 1]
+                                      [nil nil 2 nil nil nil 8 7 nil]
+                                      [9 nil 1 nil nil 5 nil nil 3]
+                                      [2 nil 7 nil nil 9 nil 3 5]
+                                      [5 nil nil nil nil nil 6 4 nil]
+                                      [nil 4 6 nil nil nil 7 9 8]])))
         response (diplomat.http-server/app-routes request)]
     (is (= 200 (:status response)))
     (is (= prettyfied-response (:body response)))))
