@@ -201,6 +201,18 @@
    [nil 8 nil nil 3 nil nil 2 nil]
    [nil nil 5 nil nil 8 9 nil nil]])
 
+(def incoming-input-easy
+  [[nil 4 nil nil nil 3 nil 8 nil]
+   [1 7 nil nil nil nil nil nil 6]
+   [nil nil 9 2 nil nil nil nil nil]
+   [5 nil 2 nil 9 nil nil nil nil]
+   [nil nil nil 8 7 nil nil nil nil]
+   [nil nil nil nil nil nil nil nil nil]
+   [nil nil nil nil 6 nil 3 7 nil]
+   [nil 8 nil nil 3 nil nil 2 nil]
+   [nil nil 5 nil nil 8 9 nil nil]])
+
+
 (def plain-json-incomplete
   [[2 1 9 5 4 3 6 7 8]
    [5 4 3 8 7 6 9 1 2]
