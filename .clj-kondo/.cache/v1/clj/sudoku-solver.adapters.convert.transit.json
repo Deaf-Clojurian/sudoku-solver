@@ -1,0 +1,1 @@
+["^ ","~$linear->standard",["^ ","~:row",6,"~:col",1,"~:fixed-arities",["~#set",[1]],"~:name","^0","~:ns","~$sudoku-solver.adapters.convert","~:top-ns","^7"],"~$standard->linear",["^ ","^1",14,"^2",1,"^3",["^4",[1]],"^5","^9","^6","^7","^8","^7"],"~:filename","/home/java/Developer/Clojure/sudoku-solver/src/sudoku_solver/adapters/convert.clj"]

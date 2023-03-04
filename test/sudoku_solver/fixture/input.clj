@@ -201,6 +201,20 @@
    [nil 8 nil nil 3 nil nil 2 nil]
    [nil nil 5 nil nil 8 9 nil nil]])
 
+(def incoming-input-linear-easy
+  [nil nil 5 3 nil 1 6 nil 8 nil nil 3 nil 6 9 4 nil 5 1 6 9 nil nil 5 nil nil nil 9 1 nil nil nil nil nil 7 5 6 nil nil 5 7 nil nil 3 9 3 5 7 9 nil 6 nil 8 4 5 7 1 6 nil 2 8 4 nil 4 nil nil 1 5 8 9 2 7 8 nil nil 4 3 7 nil 6 1])
+
+(def incoming-input-linear-easy-converted
+  [[nil nil 5 3 nil 1 6 nil 8]
+   [nil nil 3 nil 6 9 4 nil 5]
+   [1 6 9 nil nil 5 nil nil nil]
+   [9 1 nil nil nil nil nil 7 5]
+   [6 nil nil 5 7 nil nil 3 9]
+   [3 5 7 9 nil 6 nil 8 4]
+   [5 7 1 6 nil 2 8 4 nil]
+   [4 nil nil 1 5 8 9 2 7]
+   [8 nil nil 4 3 7 nil 6 1]])
+
 (def plain-json-incomplete
   [[2 1 9 5 4 3 6 7 8]
    [5 4 3 8 7 6 9 1 2]
