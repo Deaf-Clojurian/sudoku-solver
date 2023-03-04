@@ -58,6 +58,10 @@ Should be converted into a vector of line vectors in JSON (I'll work with differ
 - [x] Prettify resolutions
 - [x] Return candidate values
 - [ ] Different inputs
+ - :heavy_check_mark: Standard input
+ - :heavy_check_mark: Linear input
+ - :o: Vertical linear input
+ - :o: Positioned input
 - [ ] Run as cli
 - [ ] Solve expert level
 - [ ] Generate new Sudoku challenges (Machine Learning...)
