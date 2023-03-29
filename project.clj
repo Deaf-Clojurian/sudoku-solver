@@ -4,7 +4,7 @@
   :license {:name "Creative Commons Attribution 4.0 International"
             :url "http://creativecommons.org/licenses/by/4.0/"}
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [nubank/matcher-combinators "3.8.4"]
+                 [nubank/matcher-combinators "3.8.5"]
                  [prismatic/schema "1.4.1"]
                  [ring/ring-core "1.9.6"]
                  [ring/ring-defaults "0.3.4"]
