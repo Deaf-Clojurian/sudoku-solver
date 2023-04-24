@@ -57,6 +57,7 @@ Should be converted into a vector of line vectors in JSON (I'll work with differ
 - [x] Run with a local server
 - [x] Prettify resolutions
 - [x] Return candidate values
+- [ ] Return next tip value
 - [ ] Different inputs
  - :heavy_check_mark: Standard input
  - :heavy_check_mark: Linear input
