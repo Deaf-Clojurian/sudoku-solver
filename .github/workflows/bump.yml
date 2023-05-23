@@ -10,47 +10,45 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
           node-version: '16'
+
       - name: Install Leiningen
         run: |
           curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
           chmod +x lein
-          mv lein /usr/local/bin/lein
+          sudo mv lein /usr/local/bin/lein
+
       - name: Setup GPG
         id: setup_gpg
         uses: crazy-max/ghaction-import-gpg@v4
         with:
-          node-version: '16'
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
+
       - name: Bump dependencies
-        env:
-          ANCIENT_UPGRADE_OUTPUT: ${{ steps.bump-dependencies-output.outputs.upgrade-output }}
         run: |
-          echo "$ANCIENT_UPGRADE_OUTPUT" | tee /dev/stderr | grep -q 'No outdated dependencies.' || \
-          { \
-            echo "Updating outdated dependencies..." ; \
-            lein ancient upgrade ; \
-            echo "Saving the output of lein ancient upgrade..." ; \
-            echo "upgrade-output=$?" >> $GITHUB_ENV ; \
-          }
-      - id: bump-dependencies-output
-        run: |
-          echo "Nothing to commit, exiting" | tee /dev/stderr
-          echo "upgrade-output=0" >> $GITHUB_ENV
-        if: env.upgrade-output == '0'
-      - name: Commit changes
+          lein ancient upgrade || echo "No outdated dependencies to update"
+
+      - name: Commit and push changes
+        id: commit
         run: |
           git config --local user.email "caio.cascaes@gmail.com"
           git config --local user.name "Caio Cascaes"
-          git add project.clj
-          git commit -S -m "Bump dependencies"
+          git diff --quiet && git diff --staged --quiet || (git add . && git commit -S -m "Bump dependencies" && echo "::set-output name=push::true")
+        continue-on-error: true
+
       - name: Create pull request
+        id: cpr
+        if: steps.commit.outputs.push == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
-          node-version: '16'
           title: "Bump dependencies"
           body: "This pull request bumps the dependencies to the latest versions."
           reviewers: "deafjava"
