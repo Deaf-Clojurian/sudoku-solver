@@ -1,56 +1,48 @@
-name: Bump dependencies
+name: Update Angular and open Pull Request
 
 on:
   schedule:
     - cron: "0 12 * * 1"
+  push:
+    branches:
+      - main
 
 jobs:
-  bump-dependencies:
+  update-angular:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Configure Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16'
 
-      - name: Install Leiningen
-        run: |
-          curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
-          chmod +x lein
-          sudo mv lein /usr/local/bin/lein
+      - name: Install NPM Dependencies
+        run: npm install
 
-      - name: Setup GPG
-        id: setup_gpg
-        uses: crazy-max/ghaction-import-gpg@v4
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
 
-      - name: Bump dependencies
-        run: |
-          lein ancient upgrade || echo "No outdated dependencies to update"
+      - name: Update Angular
+        run: ng update @angular/core@latest
 
-      - name: Commit and push changes
+      - name: Commit changes and Push
         id: commit
         run: |
           git config --local user.email "caio.cascaes@gmail.com"
           git config --local user.name "Caio Cascaes"
-          git diff --quiet && git diff --staged --quiet || (git add . && git commit -S -m "Bump dependencies" && echo "::set-output name=push::true")
+          git diff --quiet && git diff --staged --quiet || (git add . && git commit -S -m "Bump Angular version" && echo "::set-output name=push::true")
         continue-on-error: true
 
-      - name: Create pull request
-        id: cpr
+      - name: Create Pull Request
         if: steps.commit.outputs.push == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
-          title: "Bump dependencies"
-          body: "This pull request bumps the dependencies to the latest versions."
+          title: "Update Angular"
+          body: "This pull request updates Angular to the latest version.  \n![](https://media.giphy.com/media/VdU7TZDHmWUTtFq2Mz/giphy.gif)"
           reviewers: "deafjava"
           assignees: "deafjava"
           base: "main"
