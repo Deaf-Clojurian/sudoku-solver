@@ -4,10 +4,10 @@
   :license {:name "Creative Commons Attribution 4.0 International"
             :url "http://creativecommons.org/licenses/by/4.0/"}
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [nubank/matcher-combinators "3.8.7"]
+                 [nubank/matcher-combinators "3.8.8"]
                  [prismatic/schema "1.4.1"]
                  [ring/ring-core "1.10.0"]
-                 [ring/ring-defaults "0.3.4"]
+                 [ring/ring-defaults "0.4.0"]
                  [ring/ring-json "0.5.1"]
                  [ring/ring-mock "0.4.0"]
                  [ring/ring-jetty-adapter "1.10.0"]
